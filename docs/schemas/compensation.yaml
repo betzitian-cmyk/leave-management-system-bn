@@ -1,0 +1,806 @@
+components:
+  schemas:
+    Salary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the salary record
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        type:
+          type: string
+          enum: [BASE_SALARY, HOURLY_RATE, COMMISSION, BONUS, ALLOWANCE]
+          description: Salary type
+        amount:
+          type: number
+          description: Salary amount
+        payFrequency:
+          type: string
+          enum: [HOURLY, DAILY, WEEKLY, BI_WEEKLY, MONTHLY, ANNUALLY]
+          description: Pay frequency
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date
+        endDate:
+          type: string
+          format: date
+          description: End date (if applicable)
+        reason:
+          type: string
+          description: Reason for salary change
+        notes:
+          type: string
+          description: Additional notes
+        approvedBy:
+          type: string
+          format: uuid
+          description: User who approved the salary
+        approvedAt:
+          type: string
+          format: date-time
+          description: Approval timestamp
+        percentageIncrease:
+          type: number
+          description: Percentage increase from previous salary
+        previousAmount:
+          type: number
+          description: Previous salary amount
+        isActive:
+          type: boolean
+          description: Whether this salary is currently active
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SalaryCreate:
+      type: object
+      required:
+        - employeeId
+        - type
+        - amount
+        - payFrequency
+        - effectiveDate
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        type:
+          type: string
+          enum: [BASE_SALARY, HOURLY_RATE, COMMISSION, BONUS, ALLOWANCE]
+          description: Salary type
+        amount:
+          type: number
+          minimum: 0
+          description: Salary amount
+        payFrequency:
+          type: string
+          enum: [HOURLY, DAILY, WEEKLY, BI_WEEKLY, MONTHLY, ANNUALLY]
+          description: Pay frequency
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date
+        endDate:
+          type: string
+          format: date
+          description: End date (if applicable)
+        reason:
+          type: string
+          description: Reason for salary change
+        notes:
+          type: string
+          description: Additional notes
+        percentageIncrease:
+          type: number
+          minimum: 0
+          description: Percentage increase from previous salary
+
+    SalaryUpdate:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [BASE_SALARY, HOURLY_RATE, COMMISSION, BONUS, ALLOWANCE]
+          description: Salary type
+        amount:
+          type: number
+          minimum: 0
+          description: Salary amount
+        payFrequency:
+          type: string
+          enum: [HOURLY, DAILY, WEEKLY, BI_WEEKLY, MONTHLY, ANNUALLY]
+          description: Pay frequency
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date
+        endDate:
+          type: string
+          format: date
+          description: End date (if applicable)
+        reason:
+          type: string
+          description: Reason for salary change
+        notes:
+          type: string
+          description: Additional notes
+        isActive:
+          type: boolean
+          description: Whether this salary is currently active
+
+    Bonus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the bonus
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        title:
+          type: string
+          description: Bonus title
+        description:
+          type: string
+          description: Bonus description
+        type:
+          type: string
+          enum:
+            [
+              PERFORMANCE,
+              ANNUAL,
+              QUARTERLY,
+              PROJECT,
+              REFERRAL,
+              RETENTION,
+              SIGN_ON,
+              MILESTONE,
+              OTHER,
+            ]
+          description: Bonus type
+        amount:
+          type: number
+          description: Bonus amount
+        percentage:
+          type: number
+          description: Bonus percentage of base salary
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date
+        paymentDate:
+          type: string
+          format: date
+          description: Payment date
+        status:
+          type: string
+          enum: [PENDING, APPROVED, PAID, CANCELLED, REJECTED]
+          description: Bonus status
+        criteria:
+          type: string
+          description: Criteria for earning the bonus
+        notes:
+          type: string
+          description: Additional notes
+        approvedBy:
+          type: string
+          format: uuid
+          description: User who approved the bonus
+        approvedAt:
+          type: string
+          format: date-time
+          description: Approval timestamp
+        rejectedBy:
+          type: string
+          format: uuid
+          description: User who rejected the bonus
+        rejectedAt:
+          type: string
+          format: date-time
+          description: Rejection timestamp
+        rejectionReason:
+          type: string
+          description: Reason for rejection
+        paymentMethod:
+          type: string
+          description: Payment method
+        referenceNumber:
+          type: string
+          description: Payment reference number
+        isTaxable:
+          type: boolean
+          default: true
+          description: Whether bonus is taxable
+        attachments:
+          type: array
+          items:
+            type: string
+          description: URLs to attached documents
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BonusCreate:
+      type: object
+      required:
+        - employeeId
+        - title
+        - type
+        - amount
+        - effectiveDate
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        title:
+          type: string
+          description: Bonus title
+        description:
+          type: string
+          description: Bonus description
+        type:
+          type: string
+          enum:
+            [
+              PERFORMANCE,
+              ANNUAL,
+              QUARTERLY,
+              PROJECT,
+              REFERRAL,
+              RETENTION,
+              SIGN_ON,
+              MILESTONE,
+              OTHER,
+            ]
+          description: Bonus type
+        amount:
+          type: number
+          minimum: 0
+          description: Bonus amount
+        percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Bonus percentage of base salary
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date
+        paymentDate:
+          type: string
+          format: date
+          description: Payment date
+        criteria:
+          type: string
+          description: Criteria for earning the bonus
+        notes:
+          type: string
+          description: Additional notes
+        isTaxable:
+          type: boolean
+          default: true
+          description: Whether bonus is taxable
+
+    BonusUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Bonus title
+        description:
+          type: string
+          description: Bonus description
+        type:
+          type: string
+          enum:
+            [
+              PERFORMANCE,
+              ANNUAL,
+              QUARTERLY,
+              PROJECT,
+              REFERRAL,
+              RETENTION,
+              SIGN_ON,
+              MILESTONE,
+              OTHER,
+            ]
+          description: Bonus type
+        amount:
+          type: number
+          minimum: 0
+          description: Bonus amount
+        percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Bonus percentage of base salary
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date
+        paymentDate:
+          type: string
+          format: date
+          description: Payment date
+        criteria:
+          type: string
+          description: Criteria for earning the bonus
+        notes:
+          type: string
+          description: Additional notes
+        isTaxable:
+          type: boolean
+          description: Whether bonus is taxable
+
+    BonusStatusUpdate:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [APPROVED, PAID, CANCELLED, REJECTED]
+          description: New bonus status
+        notes:
+          type: string
+          description: Additional notes
+        rejectionReason:
+          type: string
+          description: Reason for rejection if applicable
+        paymentMethod:
+          type: string
+          description: Payment method
+        referenceNumber:
+          type: string
+          description: Payment reference number
+
+    Benefit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the benefit
+        name:
+          type: string
+          description: Benefit name
+        description:
+          type: string
+          description: Benefit description
+        type:
+          type: string
+          enum:
+            [
+              HEALTH_INSURANCE,
+              DENTAL_INSURANCE,
+              VISION_INSURANCE,
+              LIFE_INSURANCE,
+              DISABILITY_INSURANCE,
+              RETIREMENT_PLAN,
+              PAID_TIME_OFF,
+              SICK_LEAVE,
+              MATERNITY_LEAVE,
+              PATERNITY_LEAVE,
+              EDUCATION_REIMBURSEMENT,
+              TRANSPORTATION,
+              MEAL_ALLOWANCE,
+              GYM_MEMBERSHIP,
+              OTHER,
+            ]
+          description: Benefit type
+        category:
+          type: string
+          enum: [INSURANCE, RETIREMENT, TIME_OFF, WELLNESS, PROFESSIONAL_DEVELOPMENT, LIFESTYLE]
+          description: Benefit category
+        cost:
+          type: number
+          description: Cost to company
+        employeeContribution:
+          type: number
+          description: Employee contribution amount
+        employeeContributionPercentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Employee contribution percentage
+        isActive:
+          type: boolean
+          description: Whether benefit is active
+        enrollmentRequirement:
+          type: string
+          description: Enrollment requirements
+        effectiveDate:
+          type: string
+          format: date
+          description: When benefit becomes effective
+        endDate:
+          type: string
+          format: date
+          description: When benefit ends (if applicable)
+        eligibilityCriteria:
+          type: string
+          description: Eligibility criteria
+        documents:
+          type: array
+          items:
+            type: string
+          description: Required documents
+        provider:
+          type: string
+          description: Benefit provider
+        contactInfo:
+          type: object
+          properties:
+            phone:
+              type: string
+            email:
+              type: string
+            website:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BenefitCreate:
+      type: object
+      required:
+        - name
+        - description
+        - type
+        - category
+        - cost
+      properties:
+        name:
+          type: string
+          description: Benefit name
+        description:
+          type: string
+          description: Benefit description
+        type:
+          type: string
+          enum:
+            [
+              HEALTH_INSURANCE,
+              DENTAL_INSURANCE,
+              VISION_INSURANCE,
+              LIFE_INSURANCE,
+              DISABILITY_INSURANCE,
+              RETIREMENT_PLAN,
+              PAID_TIME_OFF,
+              SICK_LEAVE,
+              MATERNITY_LEAVE,
+              PATERNITY_LEAVE,
+              EDUCATION_REIMBURSEMENT,
+              TRANSPORTATION,
+              MEAL_ALLOWANCE,
+              GYM_MEMBERSHIP,
+              OTHER,
+            ]
+          description: Benefit type
+        category:
+          type: string
+          enum: [INSURANCE, RETIREMENT, TIME_OFF, WELLNESS, PROFESSIONAL_DEVELOPMENT, LIFESTYLE]
+          description: Benefit category
+        cost:
+          type: number
+          minimum: 0
+          description: Cost to company
+        employeeContribution:
+          type: number
+          minimum: 0
+          description: Employee contribution amount
+        employeeContributionPercentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Employee contribution percentage
+        enrollmentRequirement:
+          type: string
+          description: Enrollment requirements
+        effectiveDate:
+          type: string
+          format: date
+          description: When benefit becomes effective
+        eligibilityCriteria:
+          type: string
+          description: Eligibility criteria
+        provider:
+          type: string
+          description: Benefit provider
+        contactInfo:
+          type: object
+          properties:
+            phone:
+              type: string
+            email:
+              type: string
+            website:
+              type: string
+
+    BenefitUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Benefit name
+        description:
+          type: string
+          description: Benefit description
+        type:
+          type: string
+          enum:
+            [
+              HEALTH_INSURANCE,
+              DENTAL_INSURANCE,
+              VISION_INSURANCE,
+              LIFE_INSURANCE,
+              DISABILITY_INSURANCE,
+              RETIREMENT_PLAN,
+              PAID_TIME_OFF,
+              SICK_LEAVE,
+              MATERNITY_LEAVE,
+              PATERNITY_LEAVE,
+              EDUCATION_REIMBURSEMENT,
+              TRANSPORTATION,
+              MEAL_ALLOWANCE,
+              GYM_MEMBERSHIP,
+              OTHER,
+            ]
+          description: Benefit type
+        category:
+          type: string
+          enum: [INSURANCE, RETIREMENT, TIME_OFF, WELLNESS, PROFESSIONAL_DEVELOPMENT, LIFESTYLE]
+          description: Benefit category
+        cost:
+          type: number
+          minimum: 0
+          description: Cost to company
+        employeeContribution:
+          type: number
+          minimum: 0
+          description: Employee contribution amount
+        employeeContributionPercentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Employee contribution percentage
+        isActive:
+          type: boolean
+          description: Whether benefit is active
+        enrollmentRequirement:
+          type: string
+          description: Enrollment requirements
+        effectiveDate:
+          type: string
+          format: date
+          description: When benefit becomes effective
+        endDate:
+          type: string
+          format: date
+          description: When benefit ends (if applicable)
+        eligibilityCriteria:
+          type: string
+          description: Eligibility criteria
+        provider:
+          type: string
+          description: Benefit provider
+        contactInfo:
+          type: object
+          properties:
+            phone:
+              type: string
+            email:
+              type: string
+            website:
+              type: string
+
+    EmployeeBenefit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for employee benefit enrollment
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        benefitId:
+          type: string
+          format: uuid
+          description: Benefit ID
+        enrollmentStatus:
+          type: string
+          enum: [ENROLLED, PENDING, ACTIVE, SUSPENDED, TERMINATED]
+          description: Enrollment status
+        enrollmentDate:
+          type: string
+          format: date
+          description: Enrollment date
+        effectiveDate:
+          type: string
+          format: date
+          description: When benefit becomes effective
+        endDate:
+          type: string
+          format: date
+          description: When benefit ends
+        employeeContribution:
+          type: number
+          description: Employee contribution amount
+        companyContribution:
+          type: number
+          description: Company contribution amount
+        dependents:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              relationship:
+                type: string
+              dateOfBirth:
+                type: string
+                format: date
+        policyNumber:
+          type: string
+          description: Policy or group number
+        groupNumber:
+          type: string
+          description: Group number
+        notes:
+          type: string
+          description: Additional notes
+        terminatedAt:
+          type: string
+          format: date-time
+          description: When benefit was terminated
+        terminationReason:
+          type: string
+          description: Reason for termination
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EmployeeBenefitEnrollment:
+      type: object
+      required:
+        - employeeId
+        - benefitId
+        - enrollmentDate
+        - effectiveDate
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        benefitId:
+          type: string
+          format: uuid
+          description: Benefit ID
+        enrollmentDate:
+          type: string
+          format: date
+          description: Enrollment date
+        effectiveDate:
+          type: string
+          format: date
+          description: When benefit becomes effective
+        endDate:
+          type: string
+          format: date
+          description: When benefit ends
+        employeeContribution:
+          type: number
+          minimum: 0
+          description: Employee contribution amount
+        dependents:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              relationship:
+                type: string
+              dateOfBirth:
+                type: string
+                format: date
+        policyNumber:
+          type: string
+          description: Policy or group number
+        groupNumber:
+          type: string
+          description: Group number
+        notes:
+          type: string
+          description: Additional notes
+
+    CompensationAnalytics:
+      type: object
+      properties:
+        totalEmployees:
+          type: integer
+          description: Total number of employees
+        averageSalary:
+          type: number
+          description: Average salary across all employees
+        medianSalary:
+          type: number
+          description: Median salary
+        salaryRange:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        departmentSalaryComparison:
+          type: array
+          items:
+            type: object
+            properties:
+              department:
+                type: string
+              averageSalary:
+                type: number
+              employeeCount:
+                type: integer
+        salaryGrowth:
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: integer
+              averageSalary:
+                type: number
+              percentageChange:
+                type: number
+        bonusDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              bonusType:
+                type: string
+              totalAmount:
+                type: number
+              employeeCount:
+                type: integer
+        benefitCosts:
+          type: array
+          items:
+            type: object
+            properties:
+              benefitType:
+                type: string
+              totalCost:
+                type: number
+              employeeCount:
+                type: integer
+        compensationRatio:
+          type: number
+          description: Ratio of highest to lowest salary

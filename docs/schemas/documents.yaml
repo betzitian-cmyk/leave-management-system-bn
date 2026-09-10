@@ -1,0 +1,72 @@
+components:
+  schemas:
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the document
+        leaveRequestId:
+          type: string
+          format: uuid
+          description: ID of the leave request this document is attached to
+        cloudinaryPublicId:
+          type: string
+          description: Cloudinary public ID for file management
+        cloudinaryUrl:
+          type: string
+          description: Cloudinary URL to access the file
+        uploadedById:
+          type: string
+          format: uuid
+          description: ID of the user who uploaded the document
+        leaveRequest:
+          $ref: '#/components/schemas/LeaveRequest'
+        createdAt:
+          type: string
+          format: date-time
+          description: When the document was uploaded
+      required:
+        - leaveRequestId
+        - cloudinaryPublicId
+        - cloudinaryUrl
+        - uploadedById
+
+    DocumentResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    FileValidation:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: Whether the file is valid
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of validation errors if file is invalid
+        warnings:
+          type: array
+          items:
+            type: string
+          description: List of validation warnings
+
+    FileUpload:
+      type: object
+      properties:
+        document:
+          type: string
+          format: binary
+          description: Document file to upload
+        description:
+          type: string
+          description: Optional description for the document

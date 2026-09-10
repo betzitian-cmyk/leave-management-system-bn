@@ -1,0 +1,646 @@
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User registration
+      description: |
+        Register a new user account with GUEST role. 
+        - User is assigned GUEST role initially
+        - Welcome email sent with verification link
+        - Email verification required before full access
+        - HR/Admin must create employee profile to upgrade to EMPLOYEE role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully with GUEST role. Email verification required before login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'User registered successfully with GUEST role. Welcome email sent with verification link.'
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        format: uuid
+                        description: User's unique identifier
+                      email:
+                        type: string
+                        format: email
+                        description: User's email address
+                      firstName:
+                        type: string
+                        description: User's first name
+                      lastName:
+                        type: string
+                        description: User's last name
+                      role:
+                        type: string
+                        enum: [GUEST]
+                        description: Initial role assigned (always GUEST)
+                      emailVerified:
+                        type: boolean
+                        example: false
+                        description: Email verification status (always false on registration)
+                      message:
+                        type: string
+                        example: 'Registration successful. Please check your email to verify your account before logging in.'
+        '400':
+          description: Invalid input or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        '500':
+          description: Internal server error
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: |
+        Authenticate user and return JWT token.
+        **Note**: Email verification is required before login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials or email not verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Please verify your email address before logging in. Check your inbox for the verification link.'
+                  error:
+                    type: string
+                    example: 'Please verify your email address before logging in. Check your inbox for the verification link.'
+        '500':
+          description: Internal server error
+
+  /api/auth/google:
+    get:
+      tags:
+        - Authentication
+      summary: Google OAuth login
+      description: Initiate Google OAuth authentication flow
+      responses:
+        '302':
+          description: Redirect to Google OAuth
+        '500':
+          description: Internal server error
+
+  /api/auth/google/callback:
+    get:
+      tags:
+        - Authentication
+      summary: Google OAuth callback
+      description: Handle Google OAuth callback and authenticate user
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Authorization code from Google
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+          description: State parameter for CSRF protection
+      responses:
+        '200':
+          description: Google authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Google authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        '500':
+          description: Internal server error
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Get new access token using refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        '500':
+          description: Internal server error
+
+  /api/auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change user password
+      description: Change current user's password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Invalid current password
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/auth/forgot-password:
+    post:
+      tags:
+        - Authentication
+      summary: Request password reset
+      description: Send password reset email to user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Reset email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  /api/auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset password
+      description: Reset password using reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Invalid or expired token
+        '500':
+          description: Internal server error
+
+  /api/auth/verify-email/{token}:
+    get:
+      tags:
+        - Authentication
+      summary: Verify email address
+      description: Verify user's email address using verification token
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Email verification token
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Invalid or expired token
+        '500':
+          description: Internal server error
+
+  /api/auth/resend-verification:
+    post:
+      tags:
+        - Authentication
+      summary: Resend email verification
+      description: Resend email verification link to user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+      responses:
+        '200':
+          description: Verification email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Invalid email
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Logout user and invalidate token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get user profile
+      description: Get current user's profile information
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/auth/users:
+    get:
+      tags:
+        - User Management
+      summary: Get all users
+      description: Get list of all users (Admin/HR Manager only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of users per page
+        - name: role
+          in: query
+          schema:
+            type: string
+          description: Filter by role
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Filter by status
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/auth/users/{userId}/roles:
+    put:
+      tags:
+        - User Management
+      summary: Update user role
+      description: Update user's role (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRoleRequest'
+      responses:
+        '200':
+          description: User role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  /api/auth/users/{userId}/status:
+    put:
+      tags:
+        - User Management
+      summary: Update user status
+      description: Update user's account status (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserStatusRequest'
+      responses:
+        '200':
+          description: User status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  /api/auth/users/{userId}:
+    delete:
+      tags:
+        - User Management
+      summary: Delete user
+      description: Delete user account (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User ID
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  /api/auth/status:
+    get:
+      tags:
+        - Authentication
+      summary: Get user onboarding status
+      description: |
+        Get comprehensive user status including role, email verification, and employee profile status.
+        Useful for GUEST users to check their onboarding progress and next steps.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        format: uuid
+                        description: User's unique identifier
+                      email:
+                        type: string
+                        format: email
+                        description: User's email address
+                      firstName:
+                        type: string
+                        description: User's first name
+                      lastName:
+                        type: string
+                        description: User's last name
+                      role:
+                        type: string
+                        enum: [GUEST, EMPLOYEE, MANAGER, HR_MANAGER, ADMIN]
+                        description: Current user role
+                      emailVerified:
+                        type: boolean
+                        description: Whether user's email is verified
+                      hasEmployeeProfile:
+                        type: boolean
+                        description: Whether user has an employee profile
+                      needsEmployeeProfile:
+                        type: boolean
+                        description: Whether GUEST user needs HR to create employee profile
+                      status:
+                        type: string
+                        enum: [GUEST_AWAITING_PROFILE, PENDING_APPROVAL, ACTIVE_EMPLOYEE]
+                        description: Overall user status in the onboarding process
+                    example:
+                      userId: '123e4567-e89b-12d3-a456-426614174000'
+                      email: 'john.doe@company.com'
+                      firstName: 'John'
+                      lastName: 'Doe'
+                      role: 'GUEST'
+                      emailVerified: true
+                      hasEmployeeProfile: false
+                      needsEmployeeProfile: true
+                      status: 'GUEST_AWAITING_PROFILE'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error

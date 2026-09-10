@@ -1,0 +1,90 @@
+paths:
+  /api/audit/security-events:
+    get:
+      tags:
+        - Audit
+      summary: Get recent security events
+      description: Retrieve recent security events (Admin/HR only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+          description: Maximum number of events to return
+      responses:
+        '200':
+          description: Security events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  count:
+                    type: integer
+                    description: Number of events returned
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/audit/cleanup:
+    post:
+      tags:
+        - Audit
+      summary: Clean up old audit logs
+      description: Clean up old security logs (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                retentionDays:
+                  type: integer
+                  default: 90
+                  minimum: 30
+                  maximum: 365
+                  description: Number of days to retain logs
+      responses:
+        '200':
+          description: Cleanup completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    description: Success message
+                  deletedCount:
+                    type: integer
+                    description: Number of logs deleted
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin access required
+        '500':
+          description: Internal server error

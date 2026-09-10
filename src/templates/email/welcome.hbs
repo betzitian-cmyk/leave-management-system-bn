@@ -1,0 +1,191 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Welcome to {{companyName}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .header p {
+        margin: 10px 0 0 0;
+        font-size: 16px;
+        opacity: 0.9;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .greeting {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      .message {
+        line-height: 1.6;
+        margin-bottom: 30px;
+        font-size: 16px;
+      }
+      .verification-box {
+        background-color: #f8f9ff;
+        border: 1px solid #e1e5f7;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 30px 0;
+        text-align: center;
+      }
+      .verification-box h3 {
+        margin: 0 0 15px 0;
+        color: #667eea;
+        font-size: 18px;
+      }
+      .verification-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        margin: 15px 0;
+        transition: transform 0.2s ease;
+      }
+      .verification-button:hover {
+        transform: translateY(-2px);
+      }
+      .verification-link {
+        word-break: break-all;
+        color: #667eea;
+        font-size: 14px;
+        margin-top: 15px;
+      }
+      .next-steps {
+        background-color: #f9f9f9;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin: 30px 0;
+      }
+      .next-steps h3 {
+        margin: 0 0 15px 0;
+        color: #333;
+        font-size: 16px;
+      }
+      .next-steps ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .next-steps li {
+        margin-bottom: 8px;
+        color: #666;
+      }
+      .footer {
+        background-color: #f8f9fa;
+        padding: 30px;
+        text-align: center;
+        color: #666666;
+        font-size: 14px;
+        border-top: 1px solid #eeeeee;
+      }
+      .footer .company {
+        font-weight: 600;
+        color: #333;
+      }
+      @media only screen and (max-width: 600px) {
+        .container {
+          margin: 10px;
+          border-radius: 0;
+        }
+        .header,
+        .content,
+        .footer {
+          padding: 25px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'>
+        <h1>Welcome to {{companyName}}!</h1>
+        <p>Your journey with us begins here</p>
+      </div>
+
+      <div class='content'>
+        <div class='greeting'>
+          Hello
+          {{firstName}},
+        </div>
+
+        <div class='message'>
+          Thank you for registering with
+          {{companyName}}. Your account has been successfully created as a
+          <strong>Guest User</strong>.
+        </div>
+
+        <div class='verification-box'>
+          <h3>📧 Email Verification Required</h3>
+          <p>To complete your registration and activate your account, please verify your email
+            address by clicking the button below:</p>
+
+          <a href='{{verificationUrl}}' class='verification-button'>
+            Verify Email Address
+          </a>
+
+          <div class='verification-link'>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p>{{verificationUrl}}</p>
+          </div>
+
+          <p style='margin-top: 20px; font-size: 14px; color: #666;'>
+            This verification link will expire in 24 hours.
+          </p>
+        </div>
+
+        <div class='next-steps'>
+          <h3>🚀 What happens next?</h3>
+          <ul>
+            <li>After email verification, you'll be able to log in to your account</li>
+            <li>Our HR team will review your profile and may assign you to a department</li>
+            <li>Once assigned to a department, you'll become an Employee with full access</li>
+            <li>You'll receive notifications about your account status updates</li>
+          </ul>
+        </div>
+
+        <div class='message'>
+          If you have any questions or need assistance, please don't hesitate to contact our support
+          team at
+          <a href='mailto:{{supportEmail}}' style='color: #667eea;'>{{supportEmail}}</a>.
+        </div>
+      </div>
+
+      <div class='footer'>
+        <div class='company'>{{companyName}}</div>
+        <p>Building amazing workplaces, one employee at a time.</p>
+        <p style='margin-top: 15px; font-size: 12px;'>
+          This is an automated message. Please do not reply to this email.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

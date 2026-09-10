@@ -1,0 +1,533 @@
+paths:
+  /api/leave-requests/my-leaves:
+    get:
+      tags:
+        - Leave Management
+      summary: Get my leave requests
+      description: |
+        Retrieve authenticated user's leave requests with pagination and filtering.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of items per page
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Filter by status
+        - in: query
+          name: leaveTypeId
+          schema:
+            type: string
+            format: uuid
+          description: Filter by leave type
+        - in: query
+          name: year
+          schema:
+            type: integer
+            minimum: 2020
+            maximum: 2050
+          description: Filter by year
+      responses:
+        '200':
+          description: Leave requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveRequest'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/leave-requests/team:
+    get:
+      tags:
+        - Leave Management
+      summary: Get team leave requests
+      description: Get approved leave requests for manager's team (Manager/Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Team leave requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaveRequest'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Only managers can access team leaves
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/leave-requests/department/{departmentId}:
+    get:
+      tags:
+        - Leave Management
+      summary: Get leave requests by department
+      description: Get leave requests for a specific department (HR/Admin/Department Manager only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: departmentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Department ID
+      responses:
+        '200':
+          description: Department leave requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaveRequest'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Department not found
+        '500':
+          description: Internal server error
+
+  /api/leave-requests:
+    get:
+      tags:
+        - Leave Management
+      summary: Get all leave requests
+      description: Retrieve a list of all leave requests with pagination and filtering
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of items per page
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Filter by status
+      responses:
+        '200':
+          description: Leave requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveRequest'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      pages:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    post:
+      tags:
+        - Leave Management
+      summary: Create leave request
+      description: |
+        Create a new leave request.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot create leave requests.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveRequestCreate'
+      responses:
+        '201':
+          description: Leave request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/leave-requests/{id}:
+    get:
+      tags:
+        - Leave Management
+      summary: Get leave request by ID
+      description: Retrieve a specific leave request by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Leave request ID
+      responses:
+        '200':
+          description: Leave request retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+        '404':
+          description: Leave request not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/leave-types:
+    get:
+      tags:
+        - Leave Management
+      summary: Get all leave types
+      description: Retrieve a list of all leave types
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Leave types retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveType'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    post:
+      tags:
+        - Leave Management
+      summary: Create leave type
+      description: Create a new leave type (HR/Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveTypeCreate'
+      responses:
+        '201':
+          description: Leave type created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveType'
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/leave-types/{id}:
+    get:
+      tags:
+        - Leave Management
+      summary: Get leave type by ID
+      description: Retrieve a specific leave type by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Leave type ID
+      responses:
+        '200':
+          description: Leave type retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveType'
+        '404':
+          description: Leave type not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    put:
+      tags:
+        - Leave Management
+      summary: Update leave type
+      description: Update an existing leave type (HR/Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Leave type ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveTypeUpdate'
+      responses:
+        '200':
+          description: Leave type updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveType'
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Leave type not found
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        - Leave Management
+      summary: Delete leave type
+      description: Delete a leave type (HR/Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Leave type ID
+      responses:
+        '200':
+          description: Leave type deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Leave type not found
+        '500':
+          description: Internal server error
+
+  /api/leave-balances:
+    get:
+      tags:
+        - Leave Management
+      summary: Get leave balances
+      description: Retrieve leave balances for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Leave balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveBalance'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/leave-balances/my-balances:
+    get:
+      tags:
+        - Leave Management
+      summary: Get my leave balances
+      description: Retrieve leave balances for the current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Leave balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveBalance'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/leave-balances/employee/{employeeId}:
+    get:
+      tags:
+        - Leave Management
+      summary: Get employee leave balances
+      description: Retrieve leave balances for a specific employee (HR/Admin/Manager only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+      responses:
+        '200':
+          description: Employee leave balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveBalance'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/leave-balances/adjust:
+    post:
+      tags:
+        - Leave Management
+      summary: Adjust leave balance
+      description: Adjust leave balance for an employee (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveBalanceAdjustment'
+      responses:
+        '200':
+          description: Leave balance adjusted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveBalance'
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Employee or leave type not found
+        '500':
+          description: Internal server error

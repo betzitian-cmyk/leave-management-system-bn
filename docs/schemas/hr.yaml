@@ -1,0 +1,375 @@
+components:
+  schemas:
+    HRDashboardSummary:
+      type: object
+      properties:
+        totalEmployees:
+          type: integer
+          description: Total number of employees
+        activeEmployees:
+          type: integer
+          description: Number of active employees
+        employeesOnLeave:
+          type: integer
+          description: Employees currently on leave
+        newHiresThisMonth:
+          type: integer
+          description: New hires in current month
+        pendingLeaveRequests:
+          type: integer
+          description: Pending leave requests
+        departmentDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              departmentName:
+                type: string
+              count:
+                type: integer
+              percentage:
+                type: number
+        leaveTypeDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              leaveType:
+                type: string
+              usedDays:
+                type: number
+              allocatedDays:
+                type: number
+        recentActivities:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              description:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+              employeeName:
+                type: string
+
+    EmployeeAnalytics:
+      type: object
+      properties:
+        totalEmployees:
+          type: integer
+          description: Total number of employees
+        genderDistribution:
+          type: object
+          properties:
+            male:
+              type: integer
+            female:
+              type: integer
+            other:
+              type: integer
+        ageDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              range:
+                type: string
+              count:
+                type: integer
+        tenureDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              range:
+                type: string
+              count:
+                type: integer
+        departmentDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              department:
+                type: string
+              count:
+                type: integer
+              percentage:
+                type: number
+        salaryDistribution:
+          type: object
+          properties:
+            average:
+              type: number
+            median:
+              type: number
+            min:
+              type: number
+            max:
+              type: number
+        turnoverRate:
+          type: number
+          description: Annual turnover rate percentage
+        newHiresTrend:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+              count:
+                type: integer
+
+    HRReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Report identifier
+        name:
+          type: string
+          description: Report name
+        type:
+          type: string
+          enum:
+            [
+              EMPLOYEE_COUNT,
+              LEAVE_ANALYSIS,
+              TURNOVER_ANALYSIS,
+              SALARY_ANALYSIS,
+              DEPARTMENT_ANALYSIS,
+            ]
+          description: Report type
+        parameters:
+          type: object
+          description: Report parameters
+        generatedAt:
+          type: string
+          format: date-time
+          description: When report was generated
+        generatedBy:
+          type: string
+          format: uuid
+          description: User who generated the report
+        downloadUrl:
+          type: string
+          description: URL to download the report
+        status:
+          type: string
+          enum: [GENERATING, COMPLETED, FAILED]
+          description: Report generation status
+
+    BulkEmployeeOperation:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum: [UPDATE_STATUS, UPDATE_DEPARTMENT, UPDATE_SALARY, SEND_NOTIFICATION]
+          description: Type of bulk operation
+        employeeIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of employee IDs to operate on
+        parameters:
+          type: object
+          description: Operation-specific parameters
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, COMPLETED, FAILED]
+          description: Operation status
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Operation progress percentage
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              employeeId:
+                type: string
+                format: uuid
+              status:
+                type: string
+                enum: [SUCCESS, FAILED]
+              message:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    HRPolicy:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Policy identifier
+        name:
+          type: string
+          description: Policy name
+        description:
+          type: string
+          description: Policy description
+        category:
+          type: string
+          enum: [LEAVE, COMPENSATION, CONDUCT, SAFETY, OTHER]
+          description: Policy category
+        content:
+          type: string
+          description: Policy content
+        version:
+          type: string
+          description: Policy version
+        effectiveDate:
+          type: string
+          format: date
+          description: When policy becomes effective
+        isActive:
+          type: boolean
+          description: Whether policy is currently active
+        requiresAcknowledgment:
+          type: boolean
+          description: Whether employees must acknowledge
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    HRPolicyCreate:
+      type: object
+      required:
+        - name
+        - description
+        - category
+        - content
+        - effectiveDate
+      properties:
+        name:
+          type: string
+          description: Policy name
+        description:
+          type: string
+          description: Policy description
+        category:
+          type: string
+          enum: [LEAVE, COMPENSATION, CONDUCT, SAFETY, OTHER]
+          description: Policy category
+        content:
+          type: string
+          description: Policy content
+        version:
+          type: string
+          description: Policy version
+        effectiveDate:
+          type: string
+          format: date
+          description: When policy becomes effective
+        requiresAcknowledgment:
+          type: boolean
+          default: false
+          description: Whether employees must acknowledge
+
+    ComplianceReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Report identifier
+        type:
+          type: string
+          enum: [LABOR_LAW, SAFETY, EQUAL_OPPORTUNITY, WAGE_HOUR, OTHER]
+          description: Compliance report type
+        period:
+          type: string
+          description: Reporting period
+        status:
+          type: string
+          enum: [COMPLIANT, NON_COMPLIANT, NEEDS_ATTENTION]
+          description: Compliance status
+        findings:
+          type: array
+          items:
+            type: object
+            properties:
+              issue:
+                type: string
+              severity:
+                type: string
+                enum: [LOW, MEDIUM, HIGH, CRITICAL]
+              recommendation:
+                type: string
+        generatedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+          description: When report is due
+
+    WorkforcePlanning:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Planning identifier
+        title:
+          type: string
+          description: Planning title
+        description:
+          type: string
+          description: Planning description
+        period:
+          type: string
+          description: Planning period
+        type:
+          type: string
+          enum: [HIRING, RESTRUCTURING, SUCCESSION, SKILLS_DEVELOPMENT]
+          description: Planning type
+        status:
+          type: string
+          enum: [DRAFT, IN_REVIEW, APPROVED, IMPLEMENTED]
+          description: Planning status
+        goals:
+          type: array
+          items:
+            type: string
+          description: Planning goals
+        actions:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+              timeline:
+                type: string
+              responsible:
+                type: string
+                format: uuid
+              status:
+                type: string
+                enum: [PENDING, IN_PROGRESS, COMPLETED]
+        budget:
+          type: number
+          description: Estimated budget
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

@@ -1,0 +1,108 @@
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique notification identifier
+        recipientId:
+          type: string
+          format: uuid
+          description: ID of the employee receiving the notification
+        recipient:
+          $ref: '#/components/schemas/Employee'
+          description: Employee receiving the notification
+        title:
+          type: string
+          description: Notification title
+        message:
+          type: string
+          description: Notification message content
+        relatedEntityId:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the related entity (e.g., leave request ID)
+        entityType:
+          type: string
+          nullable: true
+          description: Type of related entity (e.g., 'LEAVE_REQUEST')
+        type:
+          type: string
+          enum:
+            - LEAVE_SUBMITTED
+            - LEAVE_APPROVED
+            - LEAVE_REJECTED
+            - LEAVE_REMINDER
+            - APPROVAL_PENDING
+            - LEAVE_CANCELLED
+          description: Type of notification
+        read:
+          type: boolean
+          description: Whether the notification has been read
+        createdAt:
+          type: string
+          format: date-time
+          description: When the notification was created
+      example:
+        id: '123e4567-e89b-12d3-a456-426614174000'
+        recipientId: '456e7890-e89b-12d3-a456-426614174000'
+        title: 'Leave Request Approved'
+        message: 'Your leave request for January 15-19, 2024 has been approved.'
+        relatedEntityId: '789e0123-e89b-12d3-a456-426614174000'
+        entityType: 'LEAVE_REQUEST'
+        type: 'LEAVE_APPROVED'
+        read: false
+        createdAt: '2024-01-10T10:30:00Z'
+
+    NotificationPreferences:
+      type: object
+      properties:
+        emailNotifications:
+          type: boolean
+          description: Enable/disable email notifications
+        pushNotifications:
+          type: boolean
+          description: Enable/disable push notifications
+        leaveRequestNotifications:
+          type: boolean
+          description: Enable/disable leave request notifications
+        approvalNotifications:
+          type: boolean
+          description: Enable/disable approval notifications
+        reminderNotifications:
+          type: boolean
+          description: Enable/disable reminder notifications
+      example:
+        emailNotifications: true
+        pushNotifications: true
+        leaveRequestNotifications: true
+        approvalNotifications: true
+        reminderNotifications: false
+
+    NotificationPreferencesUpdate:
+      type: object
+      properties:
+        emailNotifications:
+          type: boolean
+          description: Enable/disable email notifications
+        pushNotifications:
+          type: boolean
+          description: Enable/disable push notifications
+        leaveRequestNotifications:
+          type: boolean
+          description: Enable/disable leave request notifications
+        approvalNotifications:
+          type: boolean
+          description: Enable/disable approval notifications
+        reminderNotifications:
+          type: boolean
+          description: Enable/disable reminder notifications
+      example:
+        emailNotifications: true
+        pushNotifications: false
+        leaveRequestNotifications: true
+        approvalNotifications: true
+        reminderNotifications: false

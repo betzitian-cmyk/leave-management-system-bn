@@ -1,0 +1,560 @@
+paths:
+  /api/recruitment/job-postings:
+    post:
+      tags:
+        - Recruitment
+      summary: Create a new job posting
+      description: Create a new job posting for recruitment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPostingCreate'
+      responses:
+        '201':
+          description: Job posting created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPosting'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/recruitment/job-postings/{id}:
+    put:
+      tags:
+        - Recruitment
+      summary: Update a job posting
+      description: Update an existing job posting
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job posting ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPostingUpdate'
+      responses:
+        '200':
+          description: Job posting updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPosting'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Job posting not found
+        '500':
+          description: Internal server error
+
+  /api/recruitment/job-postings/{id}/publish:
+    post:
+      tags:
+        - Recruitment
+      summary: Publish a job posting
+      description: Publish a draft job posting to make it visible to candidates
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job posting ID
+      responses:
+        '200':
+          description: Job posting published successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPosting'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Job posting not found
+        '500':
+          description: Internal server error
+
+  /api/recruitment/job-postings/{id}/close:
+    post:
+      tags:
+        - Recruitment
+      summary: Close a job posting
+      description: Close an active job posting to stop accepting applications
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job posting ID
+      responses:
+        '200':
+          description: Job posting closed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPosting'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Job posting not found
+        '500':
+          description: Internal server error
+
+  /api/recruitment/job-postings/search:
+    get:
+      tags:
+        - Recruitment
+      summary: Search job postings
+      description: Search and filter job postings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+          description: Job title to search for
+        - name: department
+          in: query
+          schema:
+            type: string
+          description: Department filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [DRAFT, PUBLISHED, CLOSED, ARCHIVED]
+          description: Job posting status
+        - name: employmentType
+          in: query
+          schema:
+            type: string
+            enum: [FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP]
+          description: Employment type
+        - name: location
+          in: query
+          schema:
+            type: string
+          description: Location filter
+        - name: remoteWork
+          in: query
+          schema:
+            type: boolean
+          description: Remote work availability
+        - name: page
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Job postings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobPostings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobPosting'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/recruitment/applications:
+    post:
+      tags:
+        - Recruitment
+      summary: Submit a job application
+      description: Submit a new job application for a job posting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobApplicationCreate'
+      responses:
+        '201':
+          description: Application submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobApplication'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+  /api/recruitment/applications/{id}/status:
+    put:
+      tags:
+        - Recruitment
+      summary: Update application status
+      description: Update the status of a job application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Application ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationStatusUpdate'
+      responses:
+        '200':
+          description: Application status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobApplication'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Application not found
+        '500':
+          description: Internal server error
+
+  /api/recruitment/applications/search:
+    get:
+      tags:
+        - Recruitment
+      summary: Search job applications
+      description: Search and filter job applications
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobPostingId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Job posting ID filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              [
+                APPLIED,
+                UNDER_REVIEW,
+                SHORTLISTED,
+                INTERVIEW_SCHEDULED,
+                INTERVIEW_COMPLETED,
+                OFFER_MADE,
+                HIRED,
+                REJECTED,
+                WITHDRAWN,
+              ]
+          description: Application status
+        - name: applicantName
+          in: query
+          schema:
+            type: string
+          description: Applicant name to search for
+        - name: applicantEmail
+          in: query
+          schema:
+            type: string
+          description: Applicant email filter
+        - name: page
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Applications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  applications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobApplication'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/recruitment/interviews:
+    post:
+      tags:
+        - Recruitment
+      summary: Schedule an interview
+      description: Schedule a new interview for a job application
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewCreate'
+      responses:
+        '201':
+          description: Interview scheduled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Interview'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/recruitment/interviews/{id}/status:
+    put:
+      tags:
+        - Recruitment
+      summary: Update interview status
+      description: Update the status of an interview
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Interview ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewStatusUpdate'
+      responses:
+        '200':
+          description: Interview status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Interview'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Interview not found
+        '500':
+          description: Internal server error
+
+  /api/recruitment/interviews/search:
+    get:
+      tags:
+        - Recruitment
+      summary: Search interviews
+      description: Search and filter interviews
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: applicationId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Job application ID filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+          description: Interview status
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [PHONE_SCREEN, TECHNICAL, BEHAVIORAL, FINAL, PANEL]
+          description: Interview type
+        - name: scheduledDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Scheduled date filter
+        - name: page
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Interviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Interview'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/recruitment/analytics:
+    get:
+      tags:
+        - Recruitment
+      summary: Get recruitment analytics
+      description: Get comprehensive analytics and metrics for recruitment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for analytics period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for analytics period
+        - name: department
+          in: query
+          schema:
+            type: string
+          description: Department filter for analytics
+      responses:
+        '200':
+          description: Analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruitmentAnalytics'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error

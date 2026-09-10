@@ -1,0 +1,214 @@
+paths:
+  /api/profile:
+    get:
+      tags:
+        - Profile Management
+      summary: Get current user's profile
+      description: Retrieve the profile information of the currently authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/UserInfo'
+                  message:
+                    type: string
+                    example: 'User profile retrieved successfully'
+        '401':
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Unauthorized access'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Internal server error'
+                  error:
+                    type: string
+                    example: 'Something went wrong'
+
+    put:
+      tags:
+        - Profile Management
+      summary: Update current user's profile
+      description: Update the current user's profile information and optionally upload a new profile picture
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: User's first name
+                  example: 'John'
+                lastName:
+                  type: string
+                  description: User's last name
+                  example: 'Doe'
+                profilePicture:
+                  type: string
+                  format: binary
+                  description: Profile picture file (optional)
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '123e4567-e89b-12d3-a456-426614174000'
+                      firstName:
+                        type: string
+                        example: 'John'
+                      lastName:
+                        type: string
+                        example: 'Doe'
+                      email:
+                        type: string
+                        example: 'john.doe@company.com'
+                      profilePicture:
+                        type: string
+                        nullable: true
+                        example: 'https://res.cloudinary.com/example/image/upload/profile-pictures/abc123'
+                      role:
+                        type: string
+                        example: 'EMPLOYEE'
+                  message:
+                    type: string
+                    example: 'Profile updated successfully'
+        '400':
+          description: Invalid request data or file upload error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Invalid request data'
+                  error:
+                    type: string
+                    example: 'Only image files are allowed for profile pictures'
+        '401':
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Unauthorized access'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Internal server error'
+                  error:
+                    type: string
+                    example: 'Something went wrong'
+
+  /api/profile/picture:
+    delete:
+      tags:
+        - Profile Management
+      summary: Delete current user's profile picture
+      description: Remove the profile picture of the currently authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile picture deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Profile picture deleted successfully'
+        '401':
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Unauthorized access'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Internal server error'
+                  error:
+                    type: string
+                    example: 'Something went wrong'

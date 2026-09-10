@@ -1,0 +1,505 @@
+paths:
+  /api/attendance:
+    get:
+      tags:
+        - Attendance Management
+      summary: Get attendance records
+      description: |
+        Retrieve attendance records with filtering and pagination.
+        **Access**: HR_MANAGER, ADMIN, MANAGER only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: employeeId
+          schema:
+            type: string
+            format: uuid
+          description: Filter by employee ID
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: Filter by start date (YYYY-MM-DD)
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: Filter by end date (YYYY-MM-DD)
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PRESENT, ABSENT, HALF_DAY, LEAVE]
+          description: Filter by attendance status
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Number of items per page
+      responses:
+        '200':
+          description: Attendance records retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Attendance'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '500':
+          description: Internal server error
+
+    post:
+      tags:
+        - Attendance Management
+      summary: Create attendance record
+      description: |
+        Create a new attendance record for an employee.
+        **Access**: HR_MANAGER, ADMIN, MANAGER only.
+        Can optionally include fingerprint template for verification.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreate'
+      responses:
+        '201':
+          description: Attendance recorded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Attendance'
+                  message:
+                    type: string
+        '400':
+          description: Invalid input data or attendance already exists for this date
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/attendance/summary/{employeeId}:
+    get:
+      tags:
+        - Attendance Management
+      summary: Get attendance summary for employee
+      description: |
+        Get attendance summary statistics for a specific employee.
+        **Access**: HR_MANAGER, ADMIN, MANAGER, EMPLOYEE (own data only).
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: Period start date (YYYY-MM-DD). Defaults to start of current month.
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: Period end date (YYYY-MM-DD). Defaults to end of current month.
+      responses:
+        '200':
+          description: Attendance summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/AttendanceSummary'
+                  message:
+                    type: string
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/attendance/{id}:
+    put:
+      tags:
+        - Attendance Management
+      summary: Update attendance record
+      description: |
+        Update an existing attendance record.
+        **Access**: HR_MANAGER, ADMIN only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Attendance record ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceUpdate'
+      responses:
+        '200':
+          description: Attendance updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Attendance'
+                  message:
+                    type: string
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Attendance record not found
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint-kiosk:
+    post:
+      tags:
+        - Attendance Management
+      summary: Mark attendance using fingerprint (Kiosk mode)
+      description: |
+        Automatically identify employee by fingerprint and mark attendance.
+        Perfect for kiosk/self-service attendance systems.
+        If employee has already checked in today, this will record check-out time.
+        **Access**: HR_MANAGER, ADMIN, MANAGER only.
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Worker identified and attendance marked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/FingerprintKioskResponse'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - No enrolled employees or fingerprint capture failed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Fingerprint not recognized or insufficient permissions
+        '404':
+          description: No matching fingerprint found
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint:
+    post:
+      tags:
+        - Attendance Management
+      summary: Mark attendance with fingerprint (Manual)
+      description: |
+        Verify worker identity using fingerprint and mark daily attendance.
+        Requires employee ID in request body.
+        **Access**: HR_MANAGER, ADMIN, MANAGER only.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreate'
+      responses:
+        '201':
+          description: Attendance marked successfully via fingerprint
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Attendance'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Fingerprint verification failed or employee not enrolled
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Fingerprint verification failed or insufficient permissions
+        '404':
+          description: Employee not found or not enrolled
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint/enroll/{employeeId}:
+    post:
+      tags:
+        - Attendance Management
+      summary: Enroll employee fingerprint
+      description: |
+        Capture and store employee's fingerprint template for attendance tracking.
+        **Access**: HR_MANAGER, ADMIN only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+      responses:
+        '201':
+          description: Fingerprint enrolled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/FingerprintEnrollmentResponse'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Failed to capture fingerprint or employee already enrolled
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Employee not found
+        '409':
+          description: Conflict - Employee already has fingerprint enrolled
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint/update/{employeeId}:
+    put:
+      tags:
+        - Attendance Management
+      summary: Update employee fingerprint
+      description: |
+        Re-enroll or update employee's fingerprint template.
+        Use this when fingerprint quality is poor or needs to be refreshed.
+        **Access**: HR_MANAGER, ADMIN only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+      responses:
+        '200':
+          description: Fingerprint updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/FingerprintEnrollmentResponse'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Failed to capture fingerprint or no existing enrollment
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint/remove/{employeeId}:
+    delete:
+      tags:
+        - Attendance Management
+      summary: Remove employee fingerprint
+      description: |
+        Remove employee's fingerprint enrollment.
+        Employee will need to re-enroll for fingerprint attendance.
+        **Access**: HR_MANAGER, ADMIN only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+      responses:
+        '200':
+          description: Fingerprint removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                      message:
+                        type: string
+                  message:
+                    type: string
+        '400':
+          description: Bad request - No fingerprint enrolled
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint/status:
+    get:
+      tags:
+        - Attendance Management
+      summary: Get fingerprint enrollment status
+      description: |
+        Get statistics about fingerprint enrollment for employees.
+        **Access**: HR_MANAGER, ADMIN, MANAGER only.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Fingerprint status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/FingerprintStatus'
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/attendance/fingerprint/devices:
+    get:
+      tags:
+        - Attendance Management
+      summary: Get fingerprint device information
+      description: |
+        List all connected USB devices to help identify fingerprint reader.
+        Returns device information including vendor ID, product ID, and device name.
+        **Access**: HR_MANAGER, ADMIN only.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Fingerprint device info retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/FingerprintDeviceInfo'
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Insufficient permissions
+        '500':
+          description: Internal server error

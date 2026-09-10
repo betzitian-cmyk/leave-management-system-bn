@@ -1,0 +1,263 @@
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          description: User's password
+          minLength: 6
+      example:
+        email: 'user@company.com'
+        password: 'password123'
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether login was successful
+        message:
+          type: string
+          description: Response message
+        token:
+          type: string
+          description: JWT authentication token
+        user:
+          $ref: '#/components/schemas/User'
+        expiresIn:
+          type: string
+          description: Token expiration time
+      example:
+        success: true
+        message: 'Login successful'
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        expiresIn: '24h'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User's email address
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        role:
+          $ref: '#/components/schemas/Role'
+        roleId:
+          type: string
+          format: uuid
+          description: User's role ID
+        employeeId:
+          type: string
+          format: uuid
+          description: Associated employee ID (if exists)
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED]
+          description: User account status
+        authProvider:
+          type: string
+          enum: [LOCAL, GOOGLE]
+          description: Authentication provider
+        googleId:
+          type: string
+          description: Google OAuth ID (if using Google)
+        emailVerified:
+          type: boolean
+          description: Whether email is verified
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: Last login timestamp
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique role identifier
+        name:
+          type: string
+          enum: [ADMIN, MANAGER, EMPLOYEE, HR_MANAGER, GUEST]
+          description: Role name
+        description:
+          type: string
+          description: Role description
+        createdAt:
+          type: string
+          format: date-time
+          description: Role creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          description: User's password
+          minLength: 6
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+      example:
+        email: 'user@company.com'
+        password: 'password123'
+        firstName: 'John'
+        lastName: 'Doe'
+
+    GoogleAuthRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Authorization code from Google OAuth
+        state:
+          type: string
+          description: State parameter for CSRF protection
+      example:
+        code: '4/0AfJohXn...'
+        state: 'random_state_string'
+
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          description: Refresh token for getting new access token
+      example:
+        refreshToken: 'refresh_token_here'
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          description: Current password
+        newPassword:
+          type: string
+          description: New password
+          minLength: 6
+      example:
+        currentPassword: 'oldpassword123'
+        newPassword: 'newpassword123'
+
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+      example:
+        email: 'user@company.com'
+
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - newPassword
+      properties:
+        token:
+          type: string
+          description: Password reset token
+        newPassword:
+          type: string
+          description: New password
+          minLength: 6
+      example:
+        token: 'reset_token_here'
+        newPassword: 'newpassword123'
+
+    UpdateUserRoleRequest:
+      type: object
+      required:
+        - roleId
+      properties:
+        roleId:
+          type: string
+          format: uuid
+          description: New role ID
+      example:
+        roleId: 'uuid-here'
+
+    UpdateUserStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED]
+          description: New user status
+      example:
+        status: 'ACTIVE'
+
+    AuthError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: Error message
+        error:
+          type: string
+          description: Error type
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+      example:
+        success: false
+        message: 'Invalid credentials'
+        error: 'AUTHENTICATION_FAILED'
+        timestamp: '2024-01-01T00:00:00Z'

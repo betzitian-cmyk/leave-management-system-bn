@@ -1,0 +1,404 @@
+components:
+  schemas:
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique employee identifier
+        employeeId:
+          type: string
+          description: Employee ID number
+        firstName:
+          type: string
+          description: Employee's first name
+        lastName:
+          type: string
+          description: Employee's last name
+        email:
+          type: string
+          format: email
+          description: Employee's email address
+        phone:
+          type: string
+          description: Employee's phone number
+        dateOfBirth:
+          type: string
+          format: date
+          description: Employee's date of birth
+        hireDate:
+          type: string
+          format: date
+          description: Employee's hire date
+        position:
+          type: string
+          description: Employee's job position
+        departmentId:
+          type: string
+          format: uuid
+          description: Department ID
+        managerId:
+          type: string
+          format: uuid
+          description: Manager's employee ID
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, TERMINATED, ON_LEAVE]
+          description: Employee status
+        salary:
+          type: number
+          description: Employee's salary
+        address:
+          type: string
+          description: Employee's address
+        profilePicture:
+          type: string
+          description: URL to employee's profile picture
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+            relationship:
+              type: string
+            phone:
+              type: string
+        user:
+          $ref: '#/components/schemas/User'
+          description: Associated user account
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Employee's department
+        manager:
+          $ref: '#/components/schemas/Employee'
+          description: Employee's manager
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EmployeeCreate:
+      type: object
+      required:
+        - userId
+        - position
+        - departmentId
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID of the existing user to create employee profile for
+        position:
+          type: string
+          enum: [EMPLOYEE, MANAGER, HR_MANAGER, ADMIN]
+          description: Employee's position/role in the organization
+        departmentId:
+          type: string
+          format: uuid
+          description: ID of the department the employee belongs to
+        managerId:
+          type: string
+          format: uuid
+          description: ID of the employee's manager (optional)
+        hireDate:
+          type: string
+          format: date
+          description: Employee's hire date (defaults to current date if not provided)
+
+    EmployeeUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Employee's first name
+        lastName:
+          type: string
+          description: Employee's last name
+        phone:
+          type: string
+          description: Employee's phone number
+        dateOfBirth:
+          type: string
+          format: date
+          description: Employee's date of birth
+        position:
+          type: string
+          description: Employee's job position
+        departmentId:
+          type: string
+          format: uuid
+          description: Department ID
+        managerId:
+          type: string
+          format: uuid
+          description: Manager's employee ID
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, TERMINATED, ON_LEAVE]
+          description: Employee status
+        salary:
+          type: number
+          description: Employee's salary
+        address:
+          type: string
+          description: Employee's address
+        profilePicture:
+          type: string
+          description: URL to employee's profile picture
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+            relationship:
+              type: string
+            phone:
+              type: string
+
+    EmployeeSelfProfile:
+      type: object
+      required:
+        - position
+        - departmentId
+        - hireDate
+      properties:
+        position:
+          type: string
+          description: Employee's job position
+        departmentId:
+          type: string
+          format: uuid
+          description: Department ID
+        hireDate:
+          type: string
+          format: date
+          description: Employee's hire date
+        phone:
+          type: string
+          description: Employee's phone number
+        address:
+          type: string
+          description: Employee's address
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+            relationship:
+              type: string
+            phone:
+              type: string
+
+    EmployeeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique employee identifier
+        employeeId:
+          type: string
+          description: Employee ID number
+        firstName:
+          type: string
+          description: Employee's first name
+        lastName:
+          type: string
+          description: Employee's last name
+        email:
+          type: string
+          format: email
+          description: Employee's email address
+        phone:
+          type: string
+          description: Employee's phone number
+        dateOfBirth:
+          type: string
+          format: date
+          description: Employee's date of birth
+        hireDate:
+          type: string
+          format: date
+          description: Employee's hire date
+        position:
+          type: string
+          description: Employee's job position
+        departmentId:
+          type: string
+          format: uuid
+          description: Department ID
+        managerId:
+          type: string
+          format: uuid
+          description: Manager's employee ID
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, TERMINATED, ON_LEAVE]
+          description: Employee status
+        salary:
+          type: number
+          description: Employee's salary
+        address:
+          type: string
+          description: Employee's address
+        profilePicture:
+          type: string
+          description: URL to employee's profile picture
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+            relationship:
+              type: string
+            phone:
+              type: string
+        user:
+          $ref: '#/components/schemas/User'
+          description: Associated user account
+        department:
+          $ref: '#/components/schemas/Department'
+          description: Employee's department
+        manager:
+          $ref: '#/components/schemas/Employee'
+          description: Employee's manager
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EmployeeSearch:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query for name, email, or position
+        departmentId:
+          type: string
+          format: uuid
+          description: Filter by department
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, TERMINATED, ON_LEAVE]
+          description: Filter by status
+        managerId:
+          type: string
+          format: uuid
+          description: Filter by manager
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Page number
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Number of items per page
+
+    EmployeeOverview:
+      type: object
+      properties:
+        totalEmployees:
+          type: integer
+          description: Total number of employees
+        activeEmployees:
+          type: integer
+          description: Number of active employees
+        newHiresThisMonth:
+          type: integer
+          description: New hires in current month
+        employeesOnLeave:
+          type: integer
+          description: Employees currently on leave
+        departmentDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              departmentName:
+                type: string
+              count:
+                type: integer
+        recentHires:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+
+    Department:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique department identifier
+        name:
+          type: string
+          description: Department name
+        description:
+          type: string
+          description: Department description
+        managerId:
+          type: string
+          format: uuid
+          description: Department manager ID
+        location:
+          type: string
+          description: Department location
+        budget:
+          type: number
+          description: Department budget
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DepartmentCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Department name
+        description:
+          type: string
+          description: Department description
+        managerId:
+          type: string
+          format: uuid
+          description: Department manager ID
+        location:
+          type: string
+          description: Department location
+        budget:
+          type: number
+          description: Department budget
+
+    DepartmentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Department name
+        description:
+          type: string
+          description: Department description
+        managerId:
+          type: string
+          format: uuid
+          description: Department manager ID
+        location:
+          type: string
+          description: Department location
+        budget:
+          type: number
+          description: Department budget

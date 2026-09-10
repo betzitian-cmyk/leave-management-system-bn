@@ -1,0 +1,147 @@
+paths:
+  /api/documents/upload/{leaveRequestId}:
+    post:
+      tags:
+        - Documents
+      summary: Upload document to leave request
+      description: |
+        Upload a document file to a specific leave request.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot upload documents.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: leaveRequestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the leave request
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: string
+                  format: binary
+                  description: Document file to upload
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad request - invalid file or missing required fields
+        '401':
+          description: Unauthorized
+        '404':
+          description: Leave request not found
+        '500':
+          description: Internal server error
+
+  /api/documents/leave-request/{leaveRequestId}:
+    get:
+      tags:
+        - Documents
+      summary: Get documents for a leave request
+      description: |
+        Retrieve all documents associated with a specific leave request.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access documents.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: leaveRequestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the leave request
+      responses:
+        '200':
+          description: Documents retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/documents/{documentId}:
+    get:
+      tags:
+        - Documents
+      summary: Get specific document
+      description: Retrieve details of a specific document
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the document
+      responses:
+        '200':
+          description: Document retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Document not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - Documents
+      summary: Delete document
+      description: Delete a specific document (Admin/HR Manager only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the document
+      responses:
+        '200':
+          description: Document deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Document deleted successfully
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Document not found
+        '500':
+          description: Internal server error

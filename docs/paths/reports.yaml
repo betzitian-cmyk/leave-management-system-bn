@@ -1,0 +1,319 @@
+paths:
+  /api/reports/leave-by-department:
+    get:
+      tags:
+        - Reports
+      summary: Get leave reports by department
+      description: Generate leave reports filtered by department
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for report period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for report period
+        - name: departmentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Department ID filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Leave request status filter
+      responses:
+        '200':
+          description: Report generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveRequest'
+                  total:
+                    type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/reports/leave-by-employee/{employeeId}:
+    get:
+      tags:
+        - Reports
+      summary: Get leave reports by employee
+      description: Generate leave reports for a specific employee
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for report period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for report period
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Leave request status filter
+      responses:
+        '200':
+          description: Report generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveRequest'
+                  total:
+                    type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/reports/leave-by-type:
+    get:
+      tags:
+        - Reports
+      summary: Get leave reports by type
+      description: Generate leave reports filtered by leave type
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for report period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for report period
+        - name: leaveTypeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Leave type ID filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Leave request status filter
+      responses:
+        '200':
+          description: Report generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveRequest'
+                  total:
+                    type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/reports/leave-calendar:
+    get:
+      tags:
+        - Reports
+      summary: Get leave calendar
+      description: Generate leave calendar view
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for calendar period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for calendar period
+        - name: departmentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Department ID filter
+      responses:
+        '200':
+          description: Calendar generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaveRequest'
+                  total:
+                    type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/reports/export/csv:
+    get:
+      tags:
+        - Reports
+      summary: Export reports to CSV
+      description: Export leave reports to CSV format
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reportType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [DEPARTMENT, EMPLOYEE, LEAVE_TYPE, CALENDAR]
+          description: Type of report to export
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for report period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for report period
+      responses:
+        '200':
+          description: CSV export successful
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error
+
+  /api/reports/export/excel:
+    get:
+      tags:
+        - Reports
+      summary: Export reports to Excel
+      description: Export leave reports to Excel format
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reportType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [DEPARTMENT, EMPLOYEE, LEAVE_TYPE, CALENDAR]
+          description: Type of report to export
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for report period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for report period
+      responses:
+        '200':
+          description: Excel export successful
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - insufficient permissions
+        '500':
+          description: Internal server error

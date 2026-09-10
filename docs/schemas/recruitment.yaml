@@ -1,0 +1,651 @@
+components:
+  schemas:
+    JobPosting:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the job posting
+        title:
+          type: string
+          description: Job title
+        description:
+          type: string
+          description: Detailed job description
+        requirements:
+          type: string
+          description: Job requirements
+        responsibilities:
+          type: string
+          description: Job responsibilities
+        departmentId:
+          type: string
+          format: uuid
+          description: Department ID
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, ARCHIVED]
+          description: Current status of the job posting
+        employmentType:
+          type: string
+          enum: [FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, FREELANCE]
+          description: Type of employment
+        minSalary:
+          type: number
+          description: Minimum salary
+        maxSalary:
+          type: number
+          description: Maximum salary
+        location:
+          type: string
+          description: Job location
+        remoteWork:
+          type: boolean
+          description: Whether remote work is allowed
+        experienceLevel:
+          type: integer
+          description: Required years of experience
+        skills:
+          type: array
+          items:
+            type: string
+          description: Required skills
+        benefits:
+          type: array
+          items:
+            type: string
+          description: Offered benefits
+        applicationDeadline:
+          type: string
+          format: date
+          description: Application deadline
+        numberOfPositions:
+          type: integer
+          description: Number of open positions
+        createdBy:
+          type: string
+          format: uuid
+          description: User who created the posting
+        approvedBy:
+          type: string
+          format: uuid
+          description: User who approved the posting
+        publishedAt:
+          type: string
+          format: date-time
+          description: When posting was published
+        closedAt:
+          type: string
+          format: date-time
+          description: When posting was closed
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    JobPostingCreate:
+      type: object
+      required:
+        - title
+        - description
+        - requirements
+        - responsibilities
+        - departmentId
+        - employmentType
+        - location
+      properties:
+        title:
+          type: string
+          description: Job title
+        description:
+          type: string
+          description: Detailed job description
+        requirements:
+          type: string
+          description: Job requirements
+        responsibilities:
+          type: string
+          description: Job responsibilities
+        departmentId:
+          type: string
+          format: uuid
+          description: Department ID
+        employmentType:
+          type: string
+          enum: [FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, FREELANCE]
+          description: Type of employment
+        minSalary:
+          type: number
+          description: Minimum salary
+        maxSalary:
+          type: number
+          description: Maximum salary
+        location:
+          type: string
+          description: Job location
+        remoteWork:
+          type: boolean
+          default: false
+          description: Whether remote work is allowed
+        experienceLevel:
+          type: integer
+          minimum: 0
+          description: Required years of experience
+        skills:
+          type: array
+          items:
+            type: string
+          description: Required skills
+        benefits:
+          type: array
+          items:
+            type: string
+          description: Offered benefits
+        applicationDeadline:
+          type: string
+          format: date
+          description: Application deadline
+        numberOfPositions:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Number of open positions
+
+    JobPostingUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Job title
+        description:
+          type: string
+          description: Detailed job description
+        requirements:
+          type: string
+          description: Job requirements
+        responsibilities:
+          type: string
+          description: Job responsibilities
+        employmentType:
+          type: string
+          enum: [FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, FREELANCE]
+          description: Type of employment
+        minSalary:
+          type: number
+          description: Minimum salary
+        maxSalary:
+          type: number
+          description: Maximum salary
+        location:
+          type: string
+          description: Job location
+        remoteWork:
+          type: boolean
+          description: Whether remote work is allowed
+        experienceLevel:
+          type: integer
+          minimum: 0
+          description: Required years of experience
+        skills:
+          type: array
+          items:
+            type: string
+          description: Required skills
+        benefits:
+          type: array
+          items:
+            type: string
+          description: Offered benefits
+        applicationDeadline:
+          type: string
+          format: date
+          description: Application deadline
+        numberOfPositions:
+          type: integer
+          minimum: 1
+          description: Number of open positions
+
+    JobApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the application
+        jobPostingId:
+          type: string
+          format: uuid
+          description: Associated job posting ID
+        firstName:
+          type: string
+          description: Applicant's first name
+        lastName:
+          type: string
+          description: Applicant's last name
+        email:
+          type: string
+          format: email
+          description: Applicant's email
+        phone:
+          type: string
+          description: Applicant's phone number
+        resumeUrl:
+          type: string
+          description: URL to resume
+        coverLetterUrl:
+          type: string
+          description: URL to cover letter
+        status:
+          type: string
+          enum:
+            [
+              APPLIED,
+              UNDER_REVIEW,
+              SHORTLISTED,
+              INTERVIEW_SCHEDULED,
+              INTERVIEWED,
+              OFFER_EXTENDED,
+              OFFER_ACCEPTED,
+              OFFER_DECLINED,
+              REJECTED,
+              WITHDRAWN,
+            ]
+          description: Current application status
+        skills:
+          type: array
+          items:
+            type: string
+          description: Applicant's skills
+        experienceYears:
+          type: integer
+          description: Years of experience
+        expectedSalary:
+          type: number
+          description: Expected salary
+        currentCompany:
+          type: string
+          description: Current company
+        currentPosition:
+          type: string
+          description: Current position
+        noticePeriod:
+          type: integer
+          description: Notice period in days
+        source:
+          type: string
+          description: How applicant found the job
+        notes:
+          type: string
+          description: Internal notes
+        assignedTo:
+          type: string
+          format: uuid
+          description: HR person assigned to review
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    JobApplicationCreate:
+      type: object
+      required:
+        - jobPostingId
+        - firstName
+        - lastName
+        - email
+        - resumeUrl
+      properties:
+        jobPostingId:
+          type: string
+          format: uuid
+          description: Associated job posting ID
+        firstName:
+          type: string
+          description: Applicant's first name
+        lastName:
+          type: string
+          description: Applicant's last name
+        email:
+          type: string
+          format: email
+          description: Applicant's email
+        phone:
+          type: string
+          description: Applicant's phone number
+        resumeUrl:
+          type: string
+          description: URL to resume
+        coverLetterUrl:
+          type: string
+          description: URL to cover letter
+        skills:
+          type: array
+          items:
+            type: string
+          description: Applicant's skills
+        experienceYears:
+          type: integer
+          minimum: 0
+          description: Years of experience
+        expectedSalary:
+          type: number
+          minimum: 0
+          description: Expected salary
+        currentCompany:
+          type: string
+          description: Current company
+        currentPosition:
+          type: string
+          description: Current position
+        noticePeriod:
+          type: integer
+          minimum: 0
+          description: Notice period in days
+        source:
+          type: string
+          description: How applicant found the job
+
+    JobApplicationUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Applicant's first name
+        lastName:
+          type: string
+          description: Applicant's last name
+        email:
+          type: string
+          format: email
+          description: Applicant's email
+        phone:
+          type: string
+          description: Applicant's phone number
+        resumeUrl:
+          type: string
+          description: URL to resume
+        coverLetterUrl:
+          type: string
+          description: URL to cover letter
+        skills:
+          type: array
+          items:
+            type: string
+          description: Applicant's skills
+        experienceYears:
+          type: integer
+          minimum: 0
+          description: Years of experience
+        expectedSalary:
+          type: number
+          minimum: 0
+          description: Expected salary
+        currentCompany:
+          type: string
+          description: Current company
+        currentPosition:
+          type: string
+          description: Current position
+        noticePeriod:
+          type: integer
+          minimum: 0
+          description: Notice period in days
+        source:
+          type: string
+          description: How applicant found the job
+        notes:
+          type: string
+          description: Internal notes
+
+    ApplicationStatusUpdate:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            [
+              UNDER_REVIEW,
+              SHORTLISTED,
+              INTERVIEW_SCHEDULED,
+              INTERVIEWED,
+              OFFER_EXTENDED,
+              OFFER_ACCEPTED,
+              OFFER_DECLINED,
+              REJECTED,
+              WITHDRAWN,
+            ]
+          description: New application status
+        notes:
+          type: string
+          description: Notes about status change
+        assignedTo:
+          type: string
+          format: uuid
+          description: HR person assigned to review
+
+    Interview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the interview
+        applicationId:
+          type: string
+          format: uuid
+          description: Associated application ID
+        type:
+          type: string
+          enum: [PHONE_SCREEN, TECHNICAL, BEHAVIORAL, FINAL, PANEL]
+          description: Interview type
+        status:
+          type: string
+          enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+          description: Interview status
+        scheduledAt:
+          type: string
+          format: date-time
+          description: Scheduled interview time
+        duration:
+          type: integer
+          description: Interview duration in minutes
+        location:
+          type: string
+          description: Interview location
+        meetingLink:
+          type: string
+          description: Virtual meeting link
+        interviewers:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Array of interviewer IDs
+        feedback:
+          type: string
+          description: Interview feedback
+        result:
+          type: string
+          enum: [PASSED, FAILED, NEEDS_FOLLOW_UP, ON_HOLD]
+          description: Interview result
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Interview rating (1-5)
+        notes:
+          type: string
+          description: Additional notes
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    InterviewCreate:
+      type: object
+      required:
+        - applicationId
+        - type
+        - scheduledAt
+        - duration
+        - interviewers
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+          description: Associated application ID
+        type:
+          type: string
+          enum: [PHONE_SCREEN, TECHNICAL, BEHAVIORAL, FINAL, PANEL]
+          description: Interview type
+        scheduledAt:
+          type: string
+          format: date-time
+          description: Scheduled interview time
+        duration:
+          type: integer
+          minimum: 15
+          description: Interview duration in minutes
+        location:
+          type: string
+          description: Interview location
+        meetingLink:
+          type: string
+          description: Virtual meeting link
+        interviewers:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Array of interviewer IDs
+        notes:
+          type: string
+          description: Additional notes
+
+    InterviewUpdate:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [PHONE_SCREEN, TECHNICAL, BEHAVIORAL, FINAL, PANEL]
+          description: Interview type
+        scheduledAt:
+          type: string
+          format: date-time
+          description: Scheduled interview time
+        duration:
+          type: integer
+          minimum: 15
+          description: Interview duration in minutes
+        location:
+          type: string
+          description: Interview location
+        meetingLink:
+          type: string
+          description: Virtual meeting link
+        interviewers:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Array of interviewer IDs
+        notes:
+          type: string
+          description: Additional notes
+
+    InterviewStatusUpdate:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+          description: New interview status
+        feedback:
+          type: string
+          description: Interview feedback
+        result:
+          type: string
+          enum: [PASSED, FAILED, NEEDS_FOLLOW_UP, ON_HOLD]
+          description: Interview result
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Interview rating (1-5)
+        notes:
+          type: string
+          description: Additional notes
+
+    RecruitmentAnalytics:
+      type: object
+      properties:
+        totalJobPostings:
+          type: integer
+          description: Total number of job postings
+        activeJobPostings:
+          type: integer
+          description: Number of active job postings
+        totalApplications:
+          type: integer
+          description: Total number of applications
+        applicationsThisMonth:
+          type: integer
+          description: Applications received this month
+        averageTimeToHire:
+          type: number
+          description: Average time to hire in days
+        applicationStatusDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+              count:
+                type: integer
+              percentage:
+                type: number
+        topSources:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              count:
+                type: integer
+              percentage:
+                type: number
+        departmentHiringNeeds:
+          type: array
+          items:
+            type: object
+            properties:
+              department:
+                type: string
+              openPositions:
+                type: integer
+              applications:
+                type: integer
+        interviewMetrics:
+          type: object
+          properties:
+            scheduled:
+              type: integer
+            completed:
+              type: integer
+            cancelled:
+              type: integer
+            averageRating:
+              type: number

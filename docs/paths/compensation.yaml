@@ -1,0 +1,726 @@
+paths:
+  /api/compensation/salaries:
+    post:
+      tags:
+        - Compensation
+      summary: Create a new salary record
+      description: Create a new salary record for an employee
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalaryCreate'
+      responses:
+        '201':
+          description: Salary record created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Salary'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/compensation/salaries/{id}:
+    put:
+      tags:
+        - Compensation
+      summary: Update a salary record
+      description: Update an existing salary record
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Salary record ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalaryUpdate'
+      responses:
+        '200':
+          description: Salary record updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Salary'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Salary record not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/salaries/employee/{employeeId}/history:
+    get:
+      tags:
+        - Compensation
+      summary: Get employee salary history
+      description: Get complete salary history for an employee
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for salary history
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for salary history
+      responses:
+        '200':
+          description: Salary history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Salary'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/salaries/employee/{employeeId}/current:
+    get:
+      tags:
+        - Compensation
+      summary: Get employee current salary
+      description: Get the current active salary for an employee
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+      responses:
+        '200':
+          description: Current salary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Salary'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Employee or current salary not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/salaries/search:
+    get:
+      tags:
+        - Compensation
+      summary: Search salary records
+      description: Search and filter salary records
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID filter
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [BASE_SALARY, HOURLY_RATE, COMMISSION, BONUS, ALLOWANCE]
+          description: Salary type filter
+        - name: payFrequency
+          in: query
+          schema:
+            type: string
+            enum: [HOURLY, DAILY, WEEKLY, BI_WEEKLY, MONTHLY, ANNUALLY]
+          description: Pay frequency filter
+        - name: minAmount
+          in: query
+          schema:
+            type: number
+          description: Minimum salary amount
+        - name: maxAmount
+          in: query
+          schema:
+            type: number
+          description: Maximum salary amount
+        - name: effectiveDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Effective date filter
+        - name: page
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Salary records retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  salaries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Salary'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/compensation/bonuses:
+    post:
+      tags:
+        - Compensation
+      summary: Create a new bonus record
+      description: Create a new bonus record for an employee
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BonusCreate'
+      responses:
+        '201':
+          description: Bonus record created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bonus'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/compensation/bonuses/{id}/status:
+    put:
+      tags:
+        - Compensation
+      summary: Update bonus status
+      description: Update the status of a bonus record
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Bonus record ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BonusStatusUpdate'
+      responses:
+        '200':
+          description: Bonus status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bonus'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Bonus record not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/bonuses/search:
+    get:
+      tags:
+        - Compensation
+      summary: Search bonus records
+      description: Search and filter bonus records
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID filter
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [PERFORMANCE, ANNUAL, SIGNING, RETENTION, REFERRAL, PROJECT, HOLIDAY]
+          description: Bonus type filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, PAID, CANCELLED]
+          description: Bonus status filter
+        - name: minAmount
+          in: query
+          schema:
+            type: number
+          description: Minimum bonus amount
+        - name: maxAmount
+          in: query
+          schema:
+            type: number
+          description: Maximum bonus amount
+        - name: effectiveDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Effective date filter
+        - name: page
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Bonus records retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bonuses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bonus'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/compensation/benefits:
+    post:
+      tags:
+        - Compensation
+      summary: Create a new benefit
+      description: Create a new company benefit
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BenefitCreate'
+      responses:
+        '201':
+          description: Benefit created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benefit'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/compensation/benefits/{id}:
+    put:
+      tags:
+        - Compensation
+      summary: Update a benefit
+      description: Update an existing company benefit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Benefit ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BenefitUpdate'
+      responses:
+        '200':
+          description: Benefit updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benefit'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Benefit not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/benefits/search:
+    get:
+      tags:
+        - Compensation
+      summary: Search benefits
+      description: Search and filter company benefits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: Benefit name to search for
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum:
+              [
+                HEALTH_INSURANCE,
+                DENTAL_INSURANCE,
+                VISION_INSURANCE,
+                LIFE_INSURANCE,
+                DISABILITY_INSURANCE,
+                RETIREMENT_PLAN,
+                PENSION_PLAN,
+                STOCK_OPTIONS,
+                PROFIT_SHARING,
+                EDUCATION_REIMBURSEMENT,
+                TRANSPORTATION,
+                MEALS,
+                FITNESS,
+                CHILDCARE,
+                OTHER,
+              ]
+          description: Benefit type filter
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [INSURANCE, RETIREMENT, FINANCIAL, LIFESTYLE, PROFESSIONAL_DEVELOPMENT, OTHER]
+          description: Benefit category filter
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Active status filter
+        - name: page
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: string
+            format: uuid
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Benefits retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  benefits:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Benefit'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/compensation/benefits/{benefitId}/enroll:
+    post:
+      tags:
+        - Compensation
+      summary: Enroll employee in benefit
+      description: Enroll an employee in a specific benefit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: benefitId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Benefit ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeBenefitEnrollment'
+      responses:
+        '201':
+          description: Employee enrolled in benefit successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeBenefit'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Benefit not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/benefits/enrollment/{enrollmentId}/status:
+    put:
+      tags:
+        - Compensation
+      summary: Update benefit enrollment status
+      description: Update the status of a benefit enrollment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: enrollmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Enrollment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [ACTIVE, INACTIVE, PENDING, TERMINATED]
+                  description: New enrollment status
+                effectiveDate:
+                  type: string
+                  format: date
+                  description: Effective date for status change
+                notes:
+                  type: string
+                  description: Notes about the status change
+      responses:
+        '200':
+          description: Enrollment status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeBenefit'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Enrollment not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/benefits/employee/{employeeId}:
+    get:
+      tags:
+        - Compensation
+      summary: Get employee benefits
+      description: Get all benefits for a specific employee
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Employee ID
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE, PENDING, TERMINATED]
+          description: Enrollment status filter
+      responses:
+        '200':
+          description: Employee benefits retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeBenefit'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /api/compensation/analytics:
+    get:
+      tags:
+        - Compensation
+      summary: Get compensation analytics
+      description: Get comprehensive analytics and metrics for compensation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for analytics period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for analytics period
+        - name: department
+          in: query
+          schema:
+            type: string
+          description: Department filter for analytics
+      responses:
+        '200':
+          description: Analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationAnalytics'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error

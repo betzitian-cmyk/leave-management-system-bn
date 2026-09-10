@@ -1,0 +1,217 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Verify Your Email - {{companyName}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .header p {
+        margin: 10px 0 0 0;
+        font-size: 16px;
+        opacity: 0.9;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .greeting {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      .message {
+        line-height: 1.6;
+        margin-bottom: 30px;
+        font-size: 16px;
+      }
+      .verification-box {
+        background-color: #f8f9ff;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        padding: 30px;
+        margin: 30px 0;
+        text-align: center;
+      }
+      .verification-box .icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+      .verification-box h3 {
+        margin: 0 0 15px 0;
+        color: #007bff;
+        font-size: 20px;
+      }
+      .verification-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        text-decoration: none;
+        padding: 18px 35px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 16px;
+        margin: 20px 0;
+        transition: transform 0.2s ease;
+      }
+      .verification-button:hover {
+        transform: translateY(-2px);
+      }
+      .verification-link {
+        background-color: #f1f3f4;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        word-break: break-all;
+        font-size: 14px;
+        color: #666;
+      }
+      .security-notice {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 30px 0;
+      }
+      .security-notice h3 {
+        margin: 0 0 15px 0;
+        color: #856404;
+        font-size: 16px;
+      }
+      .security-notice ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .security-notice li {
+        margin-bottom: 8px;
+        color: #856404;
+      }
+      .timer {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 25px 0;
+        text-align: center;
+      }
+      .timer .time {
+        font-weight: 600;
+        color: #721c24;
+        font-size: 18px;
+      }
+      .footer {
+        background-color: #f8f9fa;
+        padding: 30px;
+        text-align: center;
+        color: #666666;
+        font-size: 14px;
+        border-top: 1px solid #eeeeee;
+      }
+      .footer .company {
+        font-weight: 600;
+        color: #333;
+      }
+      @media only screen and (max-width: 600px) {
+        .container {
+          margin: 10px;
+          border-radius: 0;
+        }
+        .header,
+        .content,
+        .footer {
+          padding: 25px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'>
+        <h1>Email Verification</h1>
+        <p>Complete your account setup</p>
+      </div>
+
+      <div class='content'>
+        <div class='greeting'>
+          Hello
+          {{firstName}},
+        </div>
+
+        <div class='message'>
+          Thank you for registering with
+          {{companyName}}. To complete your account setup and ensure the security of your account,
+          please verify your email address.
+        </div>
+
+        <div class='verification-box'>
+          <div class='icon'>📧</div>
+          <h3>Verify Your Email Address</h3>
+          <p>Click the button below to confirm that this email address belongs to you:</p>
+
+          <a href='{{verificationUrl}}' class='verification-button'>
+            Verify Email Address
+          </a>
+
+          <div class='verification-link'>
+            <p><strong>If the button doesn't work, copy and paste this link:</strong></p>
+            {{verificationUrl}}
+          </div>
+        </div>
+
+        <div class='timer'>
+          <p>⏰
+            <strong>Important:</strong>
+            This verification link will expire in
+            <span class='time'>24 hours</span></p>
+        </div>
+
+        <div class='security-notice'>
+          <h3>🔒 Security Information</h3>
+          <ul>
+            <li>This email was sent because someone created an account using this email address</li>
+            <li>If you didn't create this account, please ignore this email</li>
+            <li>Do not share this verification link with anyone</li>
+            <li>If you suspect unauthorized activity, contact our support team immediately</li>
+          </ul>
+        </div>
+
+        <div class='message'>
+          <strong>Need help?</strong>
+          If you're having trouble with email verification or have any questions, please contact our
+          support team at
+          <a href='mailto:{{supportEmail}}' style='color: #007bff;'>{{supportEmail}}</a>.
+        </div>
+      </div>
+
+      <div class='footer'>
+        <div class='company'>{{companyName}}</div>
+        <p>Secure. Professional. Reliable.</p>
+        <p style='margin-top: 15px; font-size: 12px;'>
+          This is an automated security message. Please do not reply to this email.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

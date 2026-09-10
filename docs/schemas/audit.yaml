@@ -1,0 +1,97 @@
+# Audit System Schemas - Simplified for Security Events Only
+
+components:
+  schemas:
+    AuditLog:
+      type: object
+      description: Simplified audit log for security events only
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the audit log
+        userId:
+          type: string
+          description: ID of the user who performed the action
+        action:
+          type: string
+          enum:
+            - LOGIN
+            - LOGOUT
+            - LOGIN_FAILED
+            - ROLE_CHANGE
+            - USER_STATUS_CHANGE
+            - LEAVE_APPROVED
+            - LEAVE_REJECTED
+            - PASSWORD_CHANGE
+            - PASSWORD_RESET
+            - CRITICAL_UPDATE
+          description: Type of security action performed
+        entityType:
+          type: string
+          enum:
+            - User
+            - LeaveRequest
+            - System
+          description: Type of entity affected
+        entityId:
+          type: string
+          description: ID of the affected entity (optional)
+        description:
+          type: string
+          description: Human-readable description of the action
+        ipAddress:
+          type: string
+          description: IP address of the user (optional)
+        userAgent:
+          type: string
+          description: User agent string (optional)
+        timestamp:
+          type: string
+          format: date-time
+          description: When the action occurred
+      required:
+        - userId
+        - action
+        - entityType
+        - timestamp
+
+    SecurityEventResponse:
+      type: object
+      description: Response for security events endpoint
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+        count:
+          type: integer
+          description: Number of events returned
+
+    CleanupRequest:
+      type: object
+      description: Request body for audit cleanup
+      properties:
+        retentionDays:
+          type: integer
+          default: 90
+          minimum: 30
+          maximum: 365
+          description: Number of days to retain logs
+
+    CleanupResponse:
+      type: object
+      description: Response for audit cleanup endpoint
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          description: Success message
+        deletedCount:
+          type: integer
+          description: Number of logs deleted

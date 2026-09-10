@@ -1,0 +1,87 @@
+paths:
+  /api/hr/dashboard:
+    get:
+      tags:
+        - HR Management
+      summary: Get HR dashboard summary
+      description: Retrieve HR dashboard overview and statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: HR dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRDashboardSummary'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/hr/overview:
+    get:
+      tags:
+        - HR Management
+      summary: Get employee overview
+      description: Retrieve employee overview statistics and data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Employee overview retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeOverview'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/hr/analytics:
+    get:
+      tags:
+        - HR Management
+      summary: Get employee analytics
+      description: Retrieve detailed employee analytics and insights
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Employee analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeAnalytics'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/hr/reports:
+    get:
+      tags:
+        - HR Management
+      summary: Get HR reports
+      description: Retrieve available HR reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: HR reports retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HRReport'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error

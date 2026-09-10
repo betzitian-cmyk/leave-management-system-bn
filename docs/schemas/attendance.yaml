@@ -1,0 +1,245 @@
+components:
+  schemas:
+    Attendance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique attendance identifier
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        employee:
+          $ref: '#/components/schemas/Employee'
+          description: Employee information
+        date:
+          type: string
+          format: date
+          description: Attendance date (YYYY-MM-DD)
+        status:
+          type: string
+          enum: [PRESENT, ABSENT, HALF_DAY, LEAVE]
+          description: Attendance status
+          example: PRESENT
+        checkInTime:
+          type: string
+          pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Check-in time in HH:MM format
+          example: '09:00'
+        checkOutTime:
+          type: string
+          pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Check-out time in HH:MM format
+          example: '17:00'
+        notes:
+          type: string
+          description: Additional notes about the attendance
+        verifiedBy:
+          type: string
+          format: uuid
+          description: User ID who verified the attendance
+        verificationMethod:
+          type: string
+          enum: [MANUAL, FINGERPRINT, PIN]
+          description: Method used to verify attendance
+          example: FINGERPRINT
+        fingerprintTemplate:
+          type: string
+          description: Base64 encoded fingerprint template used for verification (if applicable)
+        confidenceScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Confidence score from fingerprint verification (0-100)
+          example: 85.5
+        createdAt:
+          type: string
+          format: date-time
+          description: Record creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Record last update timestamp
+
+    AttendanceCreate:
+      type: object
+      required:
+        - employeeId
+        - date
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        date:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Attendance date in YYYY-MM-DD format
+          example: '2025-11-10'
+        status:
+          type: string
+          enum: [PRESENT, ABSENT, HALF_DAY, LEAVE]
+          description: Attendance status (defaults to PRESENT)
+        checkInTime:
+          type: string
+          pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Check-in time in HH:MM format
+          example: '09:00'
+        checkOutTime:
+          type: string
+          pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Check-out time in HH:MM format
+          example: '17:00'
+        notes:
+          type: string
+          description: Additional notes
+        fingerprintTemplate:
+          type: string
+          description: Optional fingerprint template for verification
+
+    AttendanceUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [PRESENT, ABSENT, HALF_DAY, LEAVE]
+          description: Attendance status
+        checkInTime:
+          type: string
+          pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Check-in time in HH:MM format
+        checkOutTime:
+          type: string
+          pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Check-out time in HH:MM format
+        notes:
+          type: string
+          description: Additional notes
+
+    AttendanceSummary:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        employeeName:
+          type: string
+          description: Employee full name
+        totalDays:
+          type: integer
+          description: Total days in the period
+        daysPresent:
+          type: integer
+          description: Number of days present
+        daysAbsent:
+          type: integer
+          description: Number of days absent
+        daysHalfDay:
+          type: integer
+          description: Number of half days
+        daysLeave:
+          type: integer
+          description: Number of leave days
+        attendancePercentage:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Attendance percentage
+          example: 85.5
+        periodStart:
+          type: string
+          format: date
+          description: Period start date
+        periodEnd:
+          type: string
+          format: date
+          description: Period end date
+
+    FingerprintEnrollmentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the operation was successful
+        message:
+          type: string
+          description: Response message
+        enrollmentDate:
+          type: string
+          format: date-time
+          description: Date and time of enrollment
+
+    FingerprintStatus:
+      type: object
+      properties:
+        totalEmployees:
+          type: integer
+          description: Total number of employees
+        enrolledEmployees:
+          type: integer
+          description: Number of employees with enrolled fingerprints
+        notEnrolledEmployees:
+          type: integer
+          description: Number of employees without enrolled fingerprints
+        enrollmentPercentage:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Percentage of employees with enrolled fingerprints
+
+    FingerprintDeviceInfo:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: Whether a fingerprint device is connected
+        deviceModel:
+          type: string
+          description: Device model name
+          example: WA28
+        capacity:
+          type: integer
+          description: Maximum number of fingerprints the device can store
+        enrolledFingerprints:
+          type: integer
+          description: Number of fingerprints currently enrolled on the device
+        usbDevices:
+          type: array
+          items:
+            type: object
+            properties:
+              vendorId:
+                type: string
+                description: USB vendor ID
+              productId:
+                type: string
+                description: USB product ID
+              deviceName:
+                type: string
+                description: Device name
+              manufacturer:
+                type: string
+                description: Device manufacturer
+
+    FingerprintKioskResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether attendance was marked successfully
+        message:
+          type: string
+          description: Response message
+        employee:
+          $ref: '#/components/schemas/Employee'
+          description: Identified employee information
+        attendance:
+          $ref: '#/components/schemas/Attendance'
+          description: Created attendance record

@@ -1,0 +1,420 @@
+components:
+  schemas:
+    LeaveRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique leave request identifier
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID requesting leave
+        leaveTypeId:
+          type: string
+          format: uuid
+          description: Type of leave requested
+        startDate:
+          type: string
+          format: date
+          description: Leave start date
+        endDate:
+          type: string
+          format: date
+          description: Leave end date
+        duration:
+          type: number
+          description: Leave duration in days
+        reason:
+          type: string
+          description: Reason for leave
+        status:
+          type: string
+          enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Leave request status
+        managerId:
+          type: string
+          format: uuid
+          description: Manager ID for approval
+        approvedAt:
+          type: string
+          format: date-time
+          description: Approval timestamp
+        approvedBy:
+          type: string
+          format: uuid
+          description: Manager who approved
+        rejectionReason:
+          type: string
+          description: Reason for rejection if applicable
+        attachments:
+          type: array
+          items:
+            type: string
+          description: URLs to attached documents
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LeaveRequestCreate:
+      type: object
+      required:
+        - leaveTypeId
+        - startDate
+        - endDate
+        - reason
+      properties:
+        leaveTypeId:
+          type: string
+          format: uuid
+          description: Type of leave requested
+        startDate:
+          type: string
+          format: date
+          description: Leave start date
+        endDate:
+          type: string
+          format: date
+          description: Leave end date
+        reason:
+          type: string
+          description: Reason for leave
+        attachments:
+          type: array
+          items:
+            type: string
+          description: URLs to attached documents
+
+    LeaveRequestUpdate:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+          description: Leave start date
+        endDate:
+          type: string
+          format: date
+          description: Leave end date
+        reason:
+          type: string
+          description: Reason for leave
+        attachments:
+          type: array
+          items:
+            type: string
+          description: URLs to attached documents
+
+    LeaveRequestApproval:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [APPROVED, REJECTED]
+          description: Approval decision
+        rejectionReason:
+          type: string
+          description: Reason for rejection if applicable
+        comments:
+          type: string
+          description: Additional comments
+
+    LeaveType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique leave type identifier
+        name:
+          type: string
+          description: Leave type name
+        description:
+          type: string
+          description: Leave type description
+        defaultDays:
+          type: integer
+          description: Default number of days allocated
+        isPaid:
+          type: boolean
+          description: Whether this leave type is paid
+        color:
+          type: string
+          description: Color code for UI display
+        isActive:
+          type: boolean
+          description: Whether this leave type is active
+        requiresApproval:
+          type: boolean
+          description: Whether approval is required
+        maxConsecutiveDays:
+          type: integer
+          description: Maximum consecutive days allowed
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LeaveTypeCreate:
+      type: object
+      required:
+        - name
+        - defaultDays
+      properties:
+        name:
+          type: string
+          description: Leave type name
+        description:
+          type: string
+          description: Leave type description
+        defaultDays:
+          type: integer
+          minimum: 1
+          description: Default number of days allocated
+        isPaid:
+          type: boolean
+          default: true
+          description: Whether this leave type is paid
+        color:
+          type: string
+          description: Color code for UI display
+        requiresApproval:
+          type: boolean
+          default: true
+          description: Whether approval is required
+        maxConsecutiveDays:
+          type: integer
+          description: Maximum consecutive days allowed
+
+    LeaveTypeUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Leave type name
+        description:
+          type: string
+          description: Leave type description
+        defaultDays:
+          type: integer
+          minimum: 1
+          description: Default number of days allocated
+        isPaid:
+          type: boolean
+          description: Whether this leave type is paid
+        color:
+          type: string
+          description: Color code for UI display
+        isActive:
+          type: boolean
+          description: Whether this leave type is active
+        requiresApproval:
+          type: boolean
+          description: Whether approval is required
+        maxConsecutiveDays:
+          type: integer
+          description: Maximum consecutive days allowed
+
+    LeaveBalance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique leave balance identifier
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        leaveTypeId:
+          type: string
+          format: uuid
+          description: Leave type ID
+        allocatedDays:
+          type: number
+          description: Total days allocated
+        usedDays:
+          type: number
+          description: Days used
+        pendingDays:
+          type: number
+          description: Days pending approval
+        remainingDays:
+          type: number
+          description: Days remaining
+        carryOverDays:
+          type: number
+          description: Days carried over from previous year
+        year:
+          type: integer
+          description: Year for this balance
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LeaveBalanceUpdate:
+      type: object
+      properties:
+        allocatedDays:
+          type: number
+          minimum: 0
+          description: Total days to allocate
+        carryOverDays:
+          type: number
+          minimum: 0
+          description: Days to carry over
+
+    LeaveSearch:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Filter by employee
+        leaveTypeId:
+          type: string
+          format: uuid
+          description: Filter by leave type
+        status:
+          type: string
+          enum: [PENDING, APPROVED, REJECTED, CANCELLED]
+          description: Filter by status
+        startDate:
+          type: string
+          format: date
+          description: Filter by start date
+        endDate:
+          type: string
+          format: date
+          description: Filter by end date
+        managerId:
+          type: string
+          format: uuid
+          description: Filter by manager
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Page number
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Number of items per page
+
+    Holiday:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique holiday identifier
+        name:
+          type: string
+          description: Holiday name
+        date:
+          type: string
+          format: date
+          description: Holiday date
+        description:
+          type: string
+          description: Holiday description
+        isRecurring:
+          type: boolean
+          description: Whether this holiday recurs annually
+        country:
+          type: string
+          description: Country where holiday applies
+        isActive:
+          type: boolean
+          description: Whether this holiday is active
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    HolidayCreate:
+      type: object
+      required:
+        - name
+        - date
+      properties:
+        name:
+          type: string
+          description: Holiday name
+        date:
+          type: string
+          format: date
+          description: Holiday date
+        description:
+          type: string
+          description: Holiday description
+        isRecurring:
+          type: boolean
+          default: true
+          description: Whether this holiday recurs annually
+        country:
+          type: string
+          description: Country where holiday applies
+
+    HolidayUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Holiday name
+        date:
+          type: string
+          format: date
+          description: Holiday date
+        description:
+          type: string
+          description: Holiday description
+        isRecurring:
+          type: boolean
+          description: Whether this holiday recurs annually
+        country:
+          type: string
+          description: Country where holiday applies
+        isActive:
+          type: boolean
+          description: Whether this holiday is active
+
+    LeaveBalanceAdjustment:
+      type: object
+      required:
+        - employeeId
+        - leaveTypeId
+        - adjustment
+        - reason
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID for balance adjustment
+        leaveTypeId:
+          type: string
+          format: uuid
+          description: Leave type ID for adjustment
+        adjustment:
+          type: integer
+          description: Number of days to adjust (positive for addition, negative for subtraction)
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 200
+          description: Reason for the adjustment

@@ -1,0 +1,534 @@
+paths:
+  /api/onboarding:
+    post:
+      tags:
+        - Onboarding
+      summary: Create a new onboarding process
+      description: Create a new onboarding process for an employee
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingCreate'
+      responses:
+        '201':
+          description: Onboarding process created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Onboarding'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/onboarding/{id}/status:
+    put:
+      tags:
+        - Onboarding
+      summary: Update onboarding status
+      description: Update the status of an onboarding process
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Onboarding ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED]
+                  description: New onboarding status
+                notes:
+                  type: string
+                  description: Notes about the status change
+      responses:
+        '200':
+          description: Onboarding status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Onboarding'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Onboarding process not found
+        '500':
+          description: Internal server error
+
+  /api/onboarding/{id}/phase:
+    put:
+      tags:
+        - Onboarding
+      summary: Advance onboarding phase
+      description: Advance the onboarding process to the next phase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Onboarding ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phase:
+                  type: string
+                  enum: [PRE_BOARDING, FIRST_DAY, FIRST_WEEK, FIRST_MONTH, COMPLETION]
+                  description: New onboarding phase
+                notes:
+                  type: string
+                  description: Notes about the phase advancement
+      responses:
+        '200':
+          description: Onboarding phase advanced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Onboarding'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Onboarding process not found
+        '500':
+          description: Internal server error
+
+  /api/onboarding/search:
+    get:
+      tags:
+        - Onboarding
+      summary: Search onboarding processes
+      description: Search and filter onboarding processes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: query
+          schema:
+            type: integer
+          description: Employee ID filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED]
+          description: Onboarding status filter
+        - name: phase
+          in: query
+          schema:
+            type: string
+            enum: [PRE_BOARDING, FIRST_DAY, FIRST_WEEK, FIRST_MONTH, COMPLETION]
+          description: Onboarding phase filter
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date filter
+        - name: assignedHR
+          in: query
+          schema:
+            type: string
+          description: Assigned HR manager filter
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Onboarding processes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  onboardings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Onboarding'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/onboarding/{id}/progress:
+    get:
+      tags:
+        - Onboarding
+      summary: Get onboarding progress
+      description: Get detailed progress information for an onboarding process
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Onboarding ID
+      responses:
+        '200':
+          description: Onboarding progress retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  onboarding:
+                    $ref: '#/components/schemas/Onboarding'
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OnboardingTask'
+                  progress:
+                    type: object
+                    properties:
+                      totalTasks:
+                        type: integer
+                      completedTasks:
+                        type: integer
+                      completionPercentage:
+                        type: number
+                      estimatedCompletionDate:
+                        type: string
+                        format: date
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Onboarding process not found
+        '500':
+          description: Internal server error
+
+  /api/onboarding/tasks:
+    post:
+      tags:
+        - Onboarding
+      summary: Create a new onboarding task
+      description: Create a new task for an onboarding process
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingTaskCreate'
+      responses:
+        '201':
+          description: Onboarding task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingTask'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/onboarding/tasks/{id}/status:
+    put:
+      tags:
+        - Onboarding
+      summary: Update task status
+      description: Update the status of an onboarding task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Task ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskStatusUpdate'
+      responses:
+        '200':
+          description: Task status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingTask'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+  /api/onboarding/tasks/search:
+    get:
+      tags:
+        - Onboarding
+      summary: Search onboarding tasks
+      description: Search and filter onboarding tasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: onboardingId
+          in: query
+          schema:
+            type: integer
+          description: Onboarding process ID filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED]
+          description: Task status filter
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: Task priority filter
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [PAPERWORK, TRAINING, EQUIPMENT, ORIENTATION, COMPLIANCE, OTHER]
+          description: Task category filter
+        - name: assignedTo
+          in: query
+          schema:
+            type: string
+          description: Assigned person filter
+        - name: dueDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Due date filter
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Onboarding tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OnboardingTask'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /api/onboarding/templates:
+    post:
+      tags:
+        - Onboarding
+      summary: Create onboarding template
+      description: Create a new onboarding template for reuse
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingTemplateCreate'
+      responses:
+        '201':
+          description: Onboarding template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingTemplate'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
+  /api/onboarding/templates/{templateId}/clone:
+    post:
+      tags:
+        - Onboarding
+      summary: Clone onboarding from template
+      description: Create a new onboarding process from an existing template
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Template ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: integer
+                  description: Employee ID for the new onboarding
+                startDate:
+                  type: string
+                  format: date
+                  description: Start date for the onboarding
+                assignedHR:
+                  type: string
+                  description: Assigned HR manager
+                customFields:
+                  type: object
+                  description: Custom fields for the onboarding
+      responses:
+        '201':
+          description: Onboarding process cloned from template successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Onboarding'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Template not found
+        '500':
+          description: Internal server error
+
+  /api/onboarding/analytics:
+    get:
+      tags:
+        - Onboarding
+      summary: Get onboarding analytics
+      description: Get comprehensive analytics and metrics for onboarding
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date for analytics period
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date for analytics period
+        - name: department
+          in: query
+          schema:
+            type: string
+          description: Department filter for analytics
+      responses:
+        '200':
+          description: Analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingAnalytics'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error

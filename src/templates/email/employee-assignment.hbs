@@ -1,0 +1,268 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Welcome to the Team - {{companyName}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .header p {
+        margin: 10px 0 0 0;
+        font-size: 16px;
+        opacity: 0.9;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .greeting {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      .message {
+        line-height: 1.6;
+        margin-bottom: 30px;
+        font-size: 16px;
+      }
+      .promotion-box {
+        background: linear-gradient(135deg, #e8f5e8 0%, #f0fff4 100%);
+        border: 2px solid #28a745;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 30px 0;
+        text-align: center;
+      }
+      .promotion-box .icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+      .promotion-box h3 {
+        margin: 0 0 15px 0;
+        color: #28a745;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .promotion-box .status-change {
+        background-color: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-block;
+        margin: 10px 0;
+      }
+      .employee-details {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 30px 0;
+      }
+      .employee-details h3 {
+        margin: 0 0 20px 0;
+        color: #333;
+        font-size: 18px;
+        border-bottom: 2px solid #28a745;
+        padding-bottom: 10px;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      .detail-label {
+        font-weight: 600;
+        color: #666;
+        flex: 1;
+      }
+      .detail-value {
+        color: #333;
+        flex: 2;
+        text-align: right;
+      }
+      .access-info {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 30px 0;
+      }
+      .access-info h3 {
+        margin: 0 0 15px 0;
+        color: #856404;
+        font-size: 16px;
+      }
+      .access-info ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .access-info li {
+        margin-bottom: 8px;
+        color: #856404;
+      }
+      .action-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        margin: 20px 0;
+        transition: transform 0.2s ease;
+      }
+      .action-button:hover {
+        transform: translateY(-2px);
+      }
+      .footer {
+        background-color: #f8f9fa;
+        padding: 30px;
+        text-align: center;
+        color: #666666;
+        font-size: 14px;
+        border-top: 1px solid #eeeeee;
+      }
+      .footer .company {
+        font-weight: 600;
+        color: #333;
+      }
+      @media only screen and (max-width: 600px) {
+        .container {
+          margin: 10px;
+          border-radius: 0;
+        }
+        .header,
+        .content,
+        .footer {
+          padding: 25px 20px;
+        }
+        .detail-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .detail-value {
+          text-align: left;
+          margin-top: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'>
+        <h1>🎉 Welcome to the Team!</h1>
+        <p>You're now officially an employee</p>
+      </div>
+
+      <div class='content'>
+        <div class='greeting'>
+          Congratulations
+          {{firstName}}!
+        </div>
+
+        <div class='message'>
+          We're excited to inform you that you have been successfully assigned to a department and
+          your account status has been updated.
+        </div>
+
+        <div class='promotion-box'>
+          <div class='icon'>🚀</div>
+          <h3>Account Status Updated</h3>
+          <div class='status-change'>GUEST → EMPLOYEE</div>
+          <p>You now have full access to all employee features and services.</p>
+        </div>
+
+        <div class='employee-details'>
+          <h3>👤 Your Employee Information</h3>
+          <div class='detail-row'>
+            <div class='detail-label'>Department:</div>
+            <div class='detail-value'><strong>{{departmentName}}</strong></div>
+          </div>
+          <div class='detail-row'>
+            <div class='detail-label'>Position:</div>
+            <div class='detail-value'>{{position}}</div>
+          </div>
+          <div class='detail-row'>
+            <div class='detail-label'>Hire Date:</div>
+            <div class='detail-value'>{{hireDate}}</div>
+          </div>
+          {{#if managerName}}
+            <div class='detail-row'>
+              <div class='detail-label'>Direct Manager:</div>
+              <div class='detail-value'>{{managerName}}</div>
+            </div>
+          {{/if}}
+          <div class='detail-row'>
+            <div class='detail-label'>Employee ID:</div>
+            <div class='detail-value'>{{employeeId}}</div>
+          </div>
+        </div>
+
+        <div class='access-info'>
+          <h3>🔓 What you can now access:</h3>
+          <ul>
+            <li>Submit and manage leave requests</li>
+            <li>View your leave balances and history</li>
+            <li>Upload documents and manage your profile</li>
+            <li>Receive notifications about company updates</li>
+            <li>Access team collaboration tools</li>
+            <li>View department-specific resources</li>
+          </ul>
+        </div>
+
+        <div style='text-align: center; margin: 30px 0;'>
+          <a href='{{loginUrl}}' class='action-button'>
+            Log In to Your Account
+          </a>
+        </div>
+
+        <div class='message'>
+          If you have any questions about your new role or need assistance getting started, please
+          don't hesitate to reach out to:
+          <br /><br />
+          <strong>HR Team:</strong>
+          <a href='mailto:{{hrEmail}}' style='color: #28a745;'>{{hrEmail}}</a><br />
+          {{#if managerEmail}}
+            <strong>Your Manager:</strong>
+            <a href='mailto:{{managerEmail}}' style='color: #28a745;'>{{managerEmail}}</a>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class='footer'>
+        <div class='company'>{{companyName}}</div>
+        <p>Welcome to our growing family!</p>
+        <p style='margin-top: 15px; font-size: 12px;'>
+          This is an automated message. Please do not reply to this email.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

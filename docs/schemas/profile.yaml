@@ -1,0 +1,112 @@
+components:
+  schemas:
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User's email address
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        role:
+          type: string
+          description: User's role name
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - SUSPENDED
+          description: User account status
+        profilePicture:
+          type: string
+          nullable: true
+          description: URL to user's profile picture
+        hasEmployeeRecord:
+          type: boolean
+          description: Whether user has an associated employee record
+        employeeId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Associated employee ID (if exists)
+        department:
+          type: string
+          nullable: true
+          description: Department name (if employee)
+        position:
+          type: string
+          nullable: true
+          description: Position (if employee)
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+      example:
+        id: '123e4567-e89b-12d3-a456-426614174000'
+        email: 'john.doe@company.com'
+        firstName: 'John'
+        lastName: 'Doe'
+        role: 'EMPLOYEE'
+        status: 'ACTIVE'
+        profilePicture: 'https://res.cloudinary.com/example/image/upload/profile-pictures/abc123'
+        hasEmployeeRecord: true
+        employeeId: '456e7890-e89b-12d3-a456-426614174000'
+        department: 'IT'
+        position: 'Software Developer'
+        createdAt: '2024-01-01T00:00:00Z'
+        updatedAt: '2024-01-01T00:00:00Z'
+
+    ProfileUpdateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: User's first name
+          example: 'John'
+        lastName:
+          type: string
+          description: User's last name
+          example: 'Doe'
+        profilePicture:
+          type: string
+          format: binary
+          description: Profile picture file (optional)
+      example:
+        firstName: 'John'
+        lastName: 'Doe'
+
+    ProfileUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether update was successful
+        message:
+          type: string
+          description: Response message
+        data:
+          $ref: '#/components/schemas/UserInfo'
+      example:
+        success: true
+        message: 'Profile updated successfully'
+        data:
+          id: '123e4567-e89b-12d3-a456-426614174000'
+          firstName: 'John'
+          lastName: 'Doe'
+          email: 'john.doe@company.com'
+          profilePicture: 'https://res.cloudinary.com/example/image/upload/profile-pictures/abc123'
+          role: 'EMPLOYEE'

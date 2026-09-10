@@ -1,0 +1,22 @@
+[variables]
+PYTHON = "python3"
+npm_config_python = "python3"
+
+[phases.setup]
+nixPkgs = [
+  "nodejs_20", "python3", "gnumake", "gcc", "pkg-config",
+  "libusb1", "hidapi", "systemd", "systemd.dev", "linuxHeaders"
+]
+
+[phases.install]
+# one command so the exports apply to npm ci
+cmds = [
+  'UDEV_INC=$(dirname $(find /nix/store -path "*/include/libudev.h" -print -quit)); UDEV_LIB=$(dirname $(find /nix/store -name "libudev.so" -print -quit)); export CFLAGS="$CFLAGS -I${UDEV_INC}"; export CXXFLAGS="$CXXFLAGS -I${UDEV_INC}"; export LDFLAGS="$LDFLAGS -L${UDEV_LIB} -ludev"; npm ci --omit=dev'
+]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node dist/server.js"
+

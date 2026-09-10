@@ -1,0 +1,383 @@
+components:
+  schemas:
+    Onboarding:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        startDate:
+          type: string
+          format: date
+          description: Onboarding start date
+        status:
+          type: string
+          enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED]
+          description: Current onboarding status
+        phase:
+          type: string
+          enum: [PRE_BOARDING, FIRST_DAY, FIRST_WEEK, FIRST_MONTH, COMPLETION]
+          description: Current onboarding phase
+        assignedHR:
+          type: string
+          description: Assigned HR manager
+        estimatedCompletionDate:
+          type: string
+          format: date
+          description: Estimated completion date
+        actualCompletionDate:
+          type: string
+          format: date
+          description: Actual completion date
+        notes:
+          type: string
+          description: Additional notes
+        customFields:
+          type: object
+          description: Custom onboarding fields
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OnboardingCreate:
+      type: object
+      required:
+        - employeeId
+        - startDate
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Employee ID
+        startDate:
+          type: string
+          format: date
+          description: Onboarding start date
+        assignedHR:
+          type: string
+          description: Assigned HR manager
+        estimatedCompletionDate:
+          type: string
+          format: date
+          description: Estimated completion date
+        notes:
+          type: string
+          description: Additional notes
+        customFields:
+          type: object
+          description: Custom onboarding fields
+
+    OnboardingTask:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+        onboardingId:
+          type: integer
+          description: Onboarding process ID
+        title:
+          type: string
+          description: Task title
+        description:
+          type: string
+          description: Task description
+        category:
+          type: string
+          enum: [PAPERWORK, TRAINING, EQUIPMENT, ORIENTATION, COMPLIANCE, OTHER]
+          description: Task category
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: Task priority
+        status:
+          type: string
+          enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED]
+          description: Task status
+        assignedTo:
+          type: string
+          description: Person assigned to the task
+        dueDate:
+          type: string
+          format: date
+          description: Task due date
+        completedDate:
+          type: string
+          format: date
+          description: Task completion date
+        orderIndex:
+          type: integer
+          description: Task order in the sequence
+        isMandatory:
+          type: boolean
+          description: Whether the task is mandatory
+        estimatedDuration:
+          type: integer
+          description: Estimated duration in hours
+        actualDuration:
+          type: integer
+          description: Actual duration in hours
+        notes:
+          type: string
+          description: Additional notes
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OnboardingTaskCreate:
+      type: object
+      required:
+        - onboardingId
+        - title
+        - category
+        - priority
+      properties:
+        onboardingId:
+          type: integer
+          description: Onboarding process ID
+        title:
+          type: string
+          description: Task title
+        description:
+          type: string
+          description: Task description
+        category:
+          type: string
+          enum: [PAPERWORK, TRAINING, EQUIPMENT, ORIENTATION, COMPLIANCE, OTHER]
+          description: Task category
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: Task priority
+        assignedTo:
+          type: string
+          description: Person assigned to the task
+        dueDate:
+          type: string
+          format: date
+          description: Task due date
+        orderIndex:
+          type: integer
+          description: Task order in the sequence
+        isMandatory:
+          type: boolean
+          default: true
+          description: Whether the task is mandatory
+        estimatedDuration:
+          type: integer
+          description: Estimated duration in hours
+        notes:
+          type: string
+          description: Additional notes
+
+    TaskStatusUpdate:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED]
+          description: New task status
+        completedDate:
+          type: string
+          format: date
+          description: Task completion date
+        actualDuration:
+          type: integer
+          description: Actual duration in hours
+        notes:
+          type: string
+          description: Additional notes
+
+    OnboardingTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+        name:
+          type: string
+          description: Template name
+        description:
+          type: string
+          description: Template description
+        departmentId:
+          type: string
+          format: uuid
+          description: Department this template applies to
+        position:
+          type: string
+          description: Position this template applies to
+        isDefault:
+          type: boolean
+          description: Whether this is the default template
+        phases:
+          type: array
+          items:
+            type: object
+            properties:
+              phase:
+                type: string
+                enum: [PRE_BOARDING, FIRST_DAY, FIRST_WEEK, FIRST_MONTH, FIRST_QUARTER]
+              duration:
+                type: integer
+                description: Duration in days
+              tasks:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    category:
+                      type: string
+                    priority:
+                      type: string
+                    orderIndex:
+                      type: integer
+                    isMandatory:
+                      type: boolean
+                    estimatedDuration:
+                      type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OnboardingTemplateCreate:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          description: Template name
+        description:
+          type: string
+          description: Template description
+        departmentId:
+          type: string
+          format: uuid
+          description: Department this template applies to
+        position:
+          type: string
+          description: Position this template applies to
+        isDefault:
+          type: boolean
+          default: false
+          description: Whether this is the default template
+        phases:
+          type: array
+          items:
+            type: object
+            properties:
+              phase:
+                type: string
+                enum: [PRE_BOARDING, FIRST_DAY, FIRST_WEEK, FIRST_MONTH, FIRST_QUARTER]
+              duration:
+                type: integer
+                minimum: 1
+                description: Duration in days
+              tasks:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    category:
+                      type: string
+                    priority:
+                      type: string
+                    orderIndex:
+                      type: integer
+                    isMandatory:
+                      type: boolean
+                    estimatedDuration:
+                      type: integer
+
+    OnboardingAnalytics:
+      type: object
+      properties:
+        totalOnboardings:
+          type: integer
+          description: Total number of onboarding processes
+        activeOnboardings:
+          type: integer
+          description: Number of active onboarding processes
+        completedThisMonth:
+          type: integer
+          description: Onboardings completed this month
+        averageCompletionTime:
+          type: number
+          description: Average completion time in days
+        phaseDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              phase:
+                type: string
+              count:
+                type: integer
+              percentage:
+                type: number
+        taskCompletionRate:
+          type: number
+          description: Overall task completion rate percentage
+        satisfactionTrend:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+              averageRating:
+                type: number
+              count:
+                type: integer
+        departmentPerformance:
+          type: array
+          items:
+            type: object
+            properties:
+              department:
+                type: string
+              averageCompletionTime:
+                type: number
+              satisfactionRating:
+                type: number
+              taskCompletionRate:
+                type: number
+        commonChallenges:
+          type: array
+          items:
+            type: object
+            properties:
+              challenge:
+                type: string
+              frequency:
+                type: integer
+              percentage:
+                type: number
